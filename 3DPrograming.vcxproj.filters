@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>c2d376cd-01d3-4161-ae70-8caf697a9abf</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>33d27b96-0970-45dd-ba5c-04a726dfdc18</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="StepTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugCamera.h" />
+    <ClInclude Include="GridFloor.h" />
+    <ClInclude Include="Scene\SceneBase.h" />
+    <ClInclude Include="DirectXTK\Inc\Audio.h" />
+    <ClInclude Include="DirectXTK\Inc\CommonStates.h" />
+    <ClInclude Include="DirectXTK\Inc\DDSTextureLoader.h" />
+    <ClInclude Include="DirectXTK\Inc\DirectXHelpers.h" />
+    <ClInclude Include="DirectXTK\Inc\Effects.h" />
+    <ClInclude Include="DirectXTK\Inc\GamePad.h" />
+    <ClInclude Include="DirectXTK\Inc\GeometricPrimitive.h" />
+    <ClInclude Include="DirectXTK\Inc\GraphicsMemory.h" />
+    <ClInclude Include="DirectXTK\Inc\Keyboard.h" />
+    <ClInclude Include="DirectXTK\Inc\Model.h" />
+    <ClInclude Include="DirectXTK\Inc\Mouse.h" />
+    <ClInclude Include="DirectXTK\Inc\PostProcess.h" />
+    <ClInclude Include="DirectXTK\Inc\PrimitiveBatch.h" />
+    <ClInclude Include="DirectXTK\Inc\ScreenGrab.h" />
+    <ClInclude Include="DirectXTK\Inc\SimpleMath.h" />
+    <ClInclude Include="DirectXTK\Inc\SpriteBatch.h" />
+    <ClInclude Include="DirectXTK\Inc\SpriteFont.h" />
+    <ClInclude Include="DirectXTK\Inc\VertexTypes.h" />
+    <ClInclude Include="DirectXTK\Inc\WICTextureLoader.h" />
+    <ClInclude Include="DirectXTK\Inc\XboxDDSTextureLoader.h" />
+    <ClInclude Include="Resources\Sounds\Test01\CueSheet_0.h" />
+    <ClInclude Include="Resources\Sounds\BGMTest_acf.h" />
+    <ClInclude Include="Resources\Sounds\CueSheet_0.h" />
+    <ClInclude Include="Scene\ScenePlay.h" />
+    <ClInclude Include="Object\Obj2D.h" />
+    <ClInclude Include="Utility\ADX2\ADX2Le.h" />
+    <ClInclude Include="Utility\Number.h" />
+    <ClInclude Include="Utility\DataLoad.h" />
+    <ClInclude Include="Object\Obj3D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugCamera.cpp" />
+    <ClCompile Include="GridFloor.cpp" />
+    <ClCompile Include="Scene\ScenePlay.cpp" />
+    <ClCompile Include="Scene\SceneBase.cpp" />
+    <ClCompile Include="Object\Obj2D.cpp" />
+    <ClCompile Include="Utility\ADX2\ADX2Le.cpp" />
+    <ClCompile Include="Utility\Number.cpp" />
+    <ClCompile Include="Utility\DataLoad.cpp" />
+    <ClCompile Include="Object\Obj3D.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="directx.ico">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest">
+      <Filter>Assets</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectXTK\Inc\SimpleMath.inl" />
+    <None Include="FBX\blackgrate.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\box.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\box2.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\box3.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\box4.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\box5.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\box6.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\boxgoal1.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\cpu.FBX">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="FBX\player.FBX">
+      <Filter>Assets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <MeshContentTask Include="FBX\box1.FBX">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+  </ItemGroup>
+</Project>
