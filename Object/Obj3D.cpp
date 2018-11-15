@@ -34,9 +34,9 @@ void Obj3D::Update(float elapsedTime)
 			* Matrix::CreateTranslation(m_position);
 }
 
-void Obj3D::Render(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection)
+void Obj3D::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection)
 {
 	// ƒ‚ƒfƒ‹‚Ì•`‰æ
 	m_model->Draw(m_deviceResources->GetD3DDeviceContext(), *m_states,
-		world, view, projection);
+		m_world, view, projection);
 }
