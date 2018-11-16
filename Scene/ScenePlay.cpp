@@ -40,18 +40,15 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 	m_gameTimer->Create(m_deviceResources, L"Resources\\Textures\\Number.png");
 
-	//オブジェクト2D情報取得する
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\charatest(front).png", nullptr, m_playerTexture.GetAddressOf());
-	m_player = std::make_unique<Obj2D>();
-	m_player->SetPosition(Vector3(5.0f, 3.0f, 5.0f));
-	m_player->Initialize(m_deviceResources, m_states);
-	m_player->SetTexture(m_playerTexture.Get());
-
 
 	//ダンジョンを作成する
 	m_dungeon = new Dungeon();
 	m_dungeon->Initialize(m_deviceResources, m_states);
 	
+	//プレイヤー初期化
+	m_player = std::make_unique<Player>();
+	m_player->Initialize(m_deviceResources, m_states);
+
 }
 
 SceneBase * ScenePlay::Update(float elapsedTime)
@@ -62,11 +59,12 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 	m_gameTimer->Update();
 	m_gameTimer->SetNumber((int)m_gameTimerCD);
 
-	//プレイヤーの更新
-	m_player->Update(time);
-
 	//ダンジョンの更新
 	m_dungeon->Update(time);
+
+	//プレイヤーの更新
+	m_player->Update(elapsedTime);
+
 	return nullptr;
 }
 
@@ -76,19 +74,20 @@ void ScenePlay::Render()
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
 	//カメラの位置
-	Vector3 eye = playerPositionToCamera();
+	Vector3 eye = m_player->playerPositionToCamera();
 	//注視点の位置
 	Vector3 target = m_player->GetPosition();
 
 	//ビュー行列の作成
 	m_view = Matrix::CreateLookAt(eye, target, Vector3::Up);
 
-	m_gameTimer->Draw();
-	m_player->Render(eye, m_view, m_projection);
 	
-
-
 	m_dungeon->Render(m_view, m_projection);
+
+	m_player->Render(eye, m_view, m_projection);
+
+	m_gameTimer->Draw();
+
 }
 
 void ScenePlay::Reset()
@@ -97,13 +96,21 @@ void ScenePlay::Reset()
 	m_sprites.reset();
 	m_player.reset();
 
+
 	delete m_gameTimer;
 	m_gameTimer = nullptr;
+	delete m_dungeon;
+	m_dungeon = nullptr;
 
 }
 
-DirectX::SimpleMath::Vector3 ScenePlay::playerPositionToCamera()
+bool ScenePlay::IsMovable(DirectX::SimpleMath::Vector3 position)
 {
-	//カメラの位置
-	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 5.0f, m_player->GetPosition().z + 5.0f);
+	return m_dungeon->IsMovable(position);
 }
+
+bool ScenePlay::IsGoal(DirectX::SimpleMath::Vector3 position)
+{
+	return m_dungeon->IsGoal(position);
+}
+

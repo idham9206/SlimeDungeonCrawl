@@ -1,9 +1,12 @@
 #pragma once
 #include "SceneBase.h"
+
 #include "..\Utility\Number.h"
 #include "..\Object\Obj2D.h"
 #include "..\Object\Obj3D.h"
+
 #include "ScenePlay\Dungeon.h"
+#include "ScenePlay\Player.h"
 
 class ScenePlay : public SceneBase
 {
@@ -16,6 +19,10 @@ public:
 	void Render() override;
 	void Reset() override;
 
+	bool IsMovable(DirectX::SimpleMath::Vector3 position);
+	bool IsGoal(DirectX::SimpleMath::Vector3 position);
+
+
 private:
 	//ゲーム内のタイマーハンドル
 	float m_gameTimerCD;
@@ -24,15 +31,8 @@ private:
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
 
-
-	//プレイヤーのハンドル
-	std::unique_ptr<Obj2D> m_player;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture;
-
 	//ダンジョンのハンドル
 	Dungeon* m_dungeon;
 
-	//
-	DirectX::SimpleMath::Vector3 playerPositionToCamera();
-
+	std::unique_ptr<Player> m_player;
 };

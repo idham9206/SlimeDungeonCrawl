@@ -51,6 +51,7 @@
     <ClInclude Include="Utility\DataLoad.h" />
     <ClInclude Include="Object\Obj3D.h" />
     <ClInclude Include="Scene\ScenePlay\Dungeon.h" />
+    <ClInclude Include="Scene\ScenePlay\Player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -69,6 +70,7 @@
     <ClCompile Include="Utility\DataLoad.cpp" />
     <ClCompile Include="Object\Obj3D.cpp" />
     <ClCompile Include="Scene\ScenePlay\Dungeon.cpp" />
+    <ClCompile Include="Scene\ScenePlay\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

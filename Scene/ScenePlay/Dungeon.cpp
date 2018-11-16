@@ -25,10 +25,10 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 
 	EffectFactory fx(device);
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-
+	//データ制作
 	m_loader = new DataLoad();
 	m_loader->LoadData(L"Stage00.csv");
-
+	//モデル制作
 	m_model[TILE_BLOCK1] = Model::CreateFromCMO(device, L"Resources\\Models\\box.cmo", fx);
 	m_model[TILE_BLOCK2] = Model::CreateFromCMO(device, L"Resources\\Models\\box5.cmo", fx);
 	m_model[TILE_GOAL] = Model::CreateFromCMO(device, L"Resources\\Models\\boxgoal1.cmo", fx);
