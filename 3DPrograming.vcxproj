@@ -176,6 +176,7 @@
     <ClInclude Include="DirectXTK\Inc\VertexTypes.h" />
     <ClInclude Include="DirectXTK\Inc\WICTextureLoader.h" />
     <ClInclude Include="DirectXTK\Inc\XboxDDSTextureLoader.h" />
+    <ClInclude Include="Scene\ScenePlay\Dungeon.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GridFloor.h" />
     <ClInclude Include="Object\Obj2D.h" />
@@ -194,6 +195,7 @@
   <ItemGroup>
     <ClCompile Include="DebugCamera.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
+    <ClCompile Include="Scene\ScenePlay\Dungeon.cpp" />
     <ClCompile Include="Game.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

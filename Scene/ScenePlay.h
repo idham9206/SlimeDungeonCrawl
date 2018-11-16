@@ -30,7 +30,7 @@ private:
 	//プレイヤーのハンドル
 	std::unique_ptr<Obj2D> m_player;
 
-	//
+	//タイルのハンドル
 	std::unique_ptr<Obj3D> m_obj3D;
 
 

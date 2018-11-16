@@ -1,5 +1,4 @@
 #include "..\pch.h"
-#include "../Game.h"
 #include "ScenePlay.h"
 
 using namespace DirectX;
@@ -47,7 +46,6 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	m_player->Initialize(L"Resources\\Textures\\charatest(front).png", m_deviceResources, m_states);
 
 	//// モデルをロードしてモデルハンドルを取得する
-	//m_model = Model::CreateFromCMO(device, L"Resources\\Models\\box.cmo", fx);
 	m_obj3D = std::make_unique<Obj3D>();
 	m_obj3D->Initialize(L"Resources\\Models\\box.cmo", m_deviceResources, m_states);
 

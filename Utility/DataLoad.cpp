@@ -12,7 +12,6 @@ using namespace std;
 
 DataLoad::DataLoad()
 {
-	LoadData(L"Stage00.csv");
 
 }
 
@@ -116,5 +115,5 @@ bool DataLoad::LoadData(const wchar_t * filename)
 
 	}
 
-	return true;    // “Ç‚İ‚İ¬Œ÷}
+	return true;    // “Ç‚İ‚İ¬Œ÷
 }
