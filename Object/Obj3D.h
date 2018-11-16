@@ -37,7 +37,7 @@ public:
 	void Update(float elapsedTime);
 
 	// •`‰æ
-	void Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection);
+	void Render(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection);
 
 	//// ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ğİ’è‚·‚éŠÖ”
 	//void SetModel(DirectX::Model* model) { m_model = model; }
