@@ -47,14 +47,17 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	m_player->Initialize(m_deviceResources, m_states);
 	m_player->SetTexture(m_playerTexture.Get());
 
-	//オブジェクト3D情報取得する
-	m_model = std::make_unique<Model>();
-	m_model = Model::CreateFromCMO(device, L"Resources\\Models\\box.cmo",fx);
-	m_obj3D = std::make_unique<Obj3D>();
-	m_obj3D->Initialize(m_deviceResources, m_states);
-	m_obj3D->SetModel(m_model.get());
+	////オブジェクト3D情報取得する
+	//m_model = std::make_unique<Model>();
+	//m_model = Model::CreateFromCMO(device, L"Resources\\Models\\box.cmo",fx);
+	//m_obj3D = std::make_unique<Obj3D>();
+	//m_obj3D->Initialize(m_deviceResources, m_states);
+	//m_obj3D->SetModel(m_model.get());
 
-
+	//ダンジョンを作成する
+	m_dungeon = new Dungeon();
+	m_dungeon->Initialize(m_deviceResources, m_states);
+	
 }
 
 SceneBase * ScenePlay::Update(float elapsedTime)
@@ -68,10 +71,11 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 	//プレイヤーの更新
 	m_player->Update(time);
 
-	//オブジェクト3Dの更新
-	m_obj3D->SetPosition(Vector3(2.0f, 0.0f, 0.0f));
-	m_obj3D->Update(time);
+	////オブジェクト3Dの更新
+	//m_obj3D->SetPosition(Vector3(2.0f, 0.0f, 0.0f));
+	//m_obj3D->Update(time);
 
+	m_dungeon->Update(time);
 	return nullptr;
 }
 
@@ -84,7 +88,9 @@ void ScenePlay::Render()
 	m_player->Render(m_eye, m_view, m_projection);
 	
 
-	m_obj3D->Render(m_view, m_projection);
+	//m_obj3D->Render(m_view, m_projection);
+
+	m_dungeon->Render(m_view, m_projection);
 }
 
 void ScenePlay::Reset()
@@ -92,7 +98,7 @@ void ScenePlay::Reset()
 	// スプライトバッチの解放
 	m_sprites.reset();
 	m_player.reset();
-	m_obj3D.reset();
+	//m_obj3D.reset();
 
 	delete m_gameTimer;
 	m_gameTimer = nullptr;
