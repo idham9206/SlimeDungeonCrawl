@@ -90,8 +90,8 @@ private:
 	DirectX::SimpleMath::Matrix m_projection;
 
 	// デバッグカメラ
-	std::unique_ptr<DebugCamera> m_debugCamera;
+	//std::unique_ptr<DebugCamera> m_debugCamera;
 
 	// グリッドの床
-	std::unique_ptr<GridFloor> m_gridFloor;
+	//std::unique_ptr<GridFloor> m_gridFloor;
 };

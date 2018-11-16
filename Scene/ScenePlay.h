@@ -29,10 +29,6 @@ private:
 	std::unique_ptr<Obj2D> m_player;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture;
 
-	////タイルのハンドル
-	//std::unique_ptr<Obj3D> m_obj3D;
-	//std::unique_ptr<DirectX::Model> m_model;
-
 	//ダンジョンのハンドル
 	Dungeon* m_dungeon;
 

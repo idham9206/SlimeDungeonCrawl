@@ -37,7 +37,7 @@ void Game::Initialize(HWND window, int width, int height)
 	m_mouse->SetWindow(window);
 
 	// デバッグカメラの作成
-	m_debugCamera = std::make_unique<DebugCamera>(width, height);
+	//m_debugCamera = std::make_unique<DebugCamera>(width, height);
 
     m_deviceResources->SetWindow(window, width, height);
 
@@ -79,7 +79,7 @@ void Game::Update(DX::StepTimer const& timer)
     elapsedTime;
 
 	// デバッグカメラの更新
-	m_debugCamera->Update();
+	//m_debugCamera->Update();
 
 	m_scene->Update(elapsedTime);
 
@@ -103,19 +103,19 @@ void Game::Render()
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
 	// ビュー行列の作成
-	m_view = m_debugCamera->GetCameraMatrix();
+	//m_view = m_debugCamera->GetCameraMatrix();
 	//m_view = Matrix::CreateLookAt(Vector3(0,0,0), Vector3(5,3,5),Vector3::Up);
 
 	//m_view = Matrix::Identity;
 
 	// グリッドの床の描画
-	m_gridFloor->Render(context, m_view, m_projection);
+	//m_gridFloor->Render(context, m_view, m_projection);
 
 	// ここから描画処理を記述する
 	m_scene->SetWorld(m_world);
 	m_scene->SetView(m_view);
 	m_scene->SetProjection(m_projection);
-	m_scene->SetEye(m_debugCamera->GetEyePosition());
+	//m_scene->SetEye(m_debugCamera->GetEyePosition());
 	m_scene->Render();
 
 
@@ -137,7 +137,7 @@ void Game::Clear()
     auto renderTarget = m_deviceResources->GetRenderTargetView();
     auto depthStencil = m_deviceResources->GetDepthStencilView();
 
-    context->ClearRenderTargetView(renderTarget, Colors::DarkBlue);
+    context->ClearRenderTargetView(renderTarget, Colors::Black);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
 
@@ -213,7 +213,7 @@ void Game::CreateDeviceDependentResources()
 	m_font = std::make_unique<SpriteFont>(device, L"SegoeUI_18.spritefont");
 
 	// グリッドの床の作成
-	m_gridFloor = std::make_unique<GridFloor>(device, context, m_states.get(), 10.0f, 10);
+	//m_gridFloor = std::make_unique<GridFloor>(device, context, m_states.get(), 10.0f, 10);
 
 
 	// エフェクトファクトリー
@@ -245,7 +245,7 @@ void Game::CreateWindowSizeDependentResources()
 	);
 
 	// デバッグカメラにウインドウのサイズ変更を伝える
-	m_debugCamera->SetWindowSize(size.right, size.bottom);
+	//m_debugCamera->SetWindowSize(size.right, size.bottom);
 }
 
 void Game::OnDeviceLost()
@@ -262,7 +262,7 @@ void Game::OnDeviceLost()
 	m_font.reset();
 
 	// グリッドの床の解放
-	m_gridFloor.reset();
+	//m_gridFloor.reset();
 
 	m_scene->Reset();
 

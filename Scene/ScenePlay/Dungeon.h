@@ -52,5 +52,9 @@ public:
 
 	// •`‰æ
 	void Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection);
+
+	bool IsMovable(DirectX::SimpleMath::Vector3 position);
+
+	bool IsGoal(DirectX::SimpleMath::Vector3 position);
 };
 

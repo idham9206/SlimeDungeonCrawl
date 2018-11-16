@@ -43,16 +43,10 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	//オブジェクト2D情報取得する
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\charatest(front).png", nullptr, m_playerTexture.GetAddressOf());
 	m_player = std::make_unique<Obj2D>();
-	m_player->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+	m_player->SetPosition(Vector3(5.0f, 3.0f, 5.0f));
 	m_player->Initialize(m_deviceResources, m_states);
 	m_player->SetTexture(m_playerTexture.Get());
 
-	////オブジェクト3D情報取得する
-	//m_model = std::make_unique<Model>();
-	//m_model = Model::CreateFromCMO(device, L"Resources\\Models\\box.cmo",fx);
-	//m_obj3D = std::make_unique<Obj3D>();
-	//m_obj3D->Initialize(m_deviceResources, m_states);
-	//m_obj3D->SetModel(m_model.get());
 
 	//ダンジョンを作成する
 	m_dungeon = new Dungeon();
@@ -71,10 +65,7 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 	//プレイヤーの更新
 	m_player->Update(time);
 
-	////オブジェクト3Dの更新
-	//m_obj3D->SetPosition(Vector3(2.0f, 0.0f, 0.0f));
-	//m_obj3D->Update(time);
-
+	//ダンジョンの更新
 	m_dungeon->Update(time);
 	return nullptr;
 }
@@ -84,11 +75,18 @@ void ScenePlay::Render()
 	m_deviceResources->PIXBeginEvent(L"Render");
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
+	//カメラの位置
+	Vector3 eye = playerPositionToCamera();
+	//注視点の位置
+	Vector3 target = m_player->GetPosition();
+
+	//ビュー行列の作成
+	m_view = Matrix::CreateLookAt(eye, target, Vector3::Up);
+
 	m_gameTimer->Draw();
-	m_player->Render(m_eye, m_view, m_projection);
+	m_player->Render(eye, m_view, m_projection);
 	
 
-	//m_obj3D->Render(m_view, m_projection);
 
 	m_dungeon->Render(m_view, m_projection);
 }
@@ -98,7 +96,6 @@ void ScenePlay::Reset()
 	// スプライトバッチの解放
 	m_sprites.reset();
 	m_player.reset();
-	//m_obj3D.reset();
 
 	delete m_gameTimer;
 	m_gameTimer = nullptr;
@@ -107,6 +104,6 @@ void ScenePlay::Reset()
 
 DirectX::SimpleMath::Vector3 ScenePlay::playerPositionToCamera()
 {
-
-	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 5.0f, m_player->GetPosition().z + 20.0f);
+	//カメラの位置
+	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 5.0f, m_player->GetPosition().z + 5.0f);
 }

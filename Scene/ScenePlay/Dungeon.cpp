@@ -137,9 +137,42 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 			{
 				if (m_block[i][j][k] != nullptr)
 				{
-					m_block[i][j][k]->Render(view, projection);
+					if (k < 9)
+					{
+						m_block[i][j][k]->Render(view, projection);
+
+					}
 				}
 			}
 		}
+	}
+}
+
+bool Dungeon::IsMovable(DirectX::SimpleMath::Vector3 position)
+{	
+	if (m_data[(int)position.x][(int)position.y][(int)position.z] != TILE_BLOCK1 &&
+		m_data[(int)position.x][(int)position.y][(int)position.z] != TILE_BLOCK2)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
+}
+
+bool Dungeon::IsGoal(DirectX::SimpleMath::Vector3 position)
+{
+	{
+		if (m_data[(int)position.x][(int)position.y][(int)position.z] == TILE_GOAL)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
 	}
 }
