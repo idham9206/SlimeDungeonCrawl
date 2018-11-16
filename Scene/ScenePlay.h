@@ -26,8 +26,6 @@ private:
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
 
-	//// モデルハンドル
-	//std::unique_ptr<DirectX::Model> m_model;
 
 	//プレイヤーのハンドル
 	std::unique_ptr<Obj2D> m_player;

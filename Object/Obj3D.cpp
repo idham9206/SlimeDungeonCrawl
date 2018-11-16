@@ -38,5 +38,5 @@ void Obj3D::Render(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matri
 {
 	// ƒ‚ƒfƒ‹‚Ì•`‰æ
 	m_model->Draw(m_deviceResources->GetD3DDeviceContext(), *m_states,
-		world, view, projection);
+		m_world, view, projection);
 }
