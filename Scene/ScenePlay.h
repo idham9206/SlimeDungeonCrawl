@@ -20,7 +20,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 	
 	//ゲーム内のタイマーハンドル
-	float m_gameTimerCount;
+	float m_gameTimerCD;
 	Number* m_gameTimer;
 
 	// スプライトバッチ

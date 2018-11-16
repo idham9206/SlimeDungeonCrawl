@@ -26,16 +26,18 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	EffectFactory fx(device);
 
 	device;
-	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
 	// コモンステートの作成
 	m_states = states;
+
+	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+
 
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
 
 	m_gameTimer = new Number(Vector2(420.0f, 10.0f), Vector2(2.0f, 2.0f));
-	m_gameTimerCount = 100;
+	m_gameTimerCD = 100;
 	m_gameTimer->Initialize();
 	m_gameTimer->Create(m_deviceResources, L"Resources\\Textures\\Number.png");
 
@@ -52,14 +54,14 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 SceneBase * ScenePlay::Update(float elapsedTime)
 {
-	float time = elapsedTime;
-	m_gameTimerCount -= (1.0f / 60.0f);
+	//float time = elapsedTime;
+	float gameTimer = m_gameTimerCD - elapsedTime;
 	m_gameTimer->Update();
-	m_gameTimer->SetNumber((int)m_gameTimerCount);
-	m_player->Update(time);
+	m_gameTimer->SetNumber((int)gameTimer);
+	m_player->Update(elapsedTime);
 
 	m_obj3D->SetPosition(Vector3(5.0f, 0.0f, 0.0f));
-	m_obj3D->Update(time);
+	m_obj3D->Update(elapsedTime);
 
 	return nullptr;
 }
