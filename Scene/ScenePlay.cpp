@@ -55,6 +55,7 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 SceneBase * ScenePlay::Update(float elapsedTime)
 {
+	//ゲームタイマー
 	float time = elapsedTime;
 	m_gameTimerCD -= time;
 	m_gameTimer->Update();
@@ -76,7 +77,7 @@ void ScenePlay::Render()
 	m_player->Render(m_eye, m_view, m_projection);
 	
 
-	m_obj3D->Render(m_world, m_view, m_projection);
+	m_obj3D->Render(m_view, m_projection);
 }
 
 void ScenePlay::Reset()
