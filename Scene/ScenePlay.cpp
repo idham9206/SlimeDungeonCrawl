@@ -40,14 +40,20 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 	m_gameTimer->Create(m_deviceResources, L"Resources\\Textures\\Number.png");
 
-
+	//オブジェクト2D情報取得する
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\charatest(front).png", nullptr, m_playerTexture.GetAddressOf());
 	m_player = std::make_unique<Obj2D>();
 	m_player->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-	m_player->Initialize(L"Resources\\Textures\\charatest(front).png", m_deviceResources, m_states);
+	m_player->Initialize(m_deviceResources, m_states);
+	m_player->SetTexture(m_playerTexture.Get());
 
-	//// モデルをロードしてモデルハンドルを取得する
+	//オブジェクト3D情報取得する
+	m_model = std::make_unique<Model>();
+	m_model = Model::CreateFromCMO(device, L"Resources\\Models\\box.cmo",fx);
 	m_obj3D = std::make_unique<Obj3D>();
-	m_obj3D->Initialize(L"Resources\\Models\\box.cmo", m_deviceResources, m_states);
+	m_obj3D->Initialize(m_deviceResources, m_states);
+	m_obj3D->SetModel(m_model.get());
+
 
 }
 
@@ -58,9 +64,12 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 	m_gameTimerCD -= time;
 	m_gameTimer->Update();
 	m_gameTimer->SetNumber((int)m_gameTimerCD);
+
+	//プレイヤーの更新
 	m_player->Update(time);
 
-	m_obj3D->SetPosition(Vector3(5.0f, 0.0f, 0.0f));
+	//オブジェクト3Dの更新
+	m_obj3D->SetPosition(Vector3(2.0f, 0.0f, 0.0f));
 	m_obj3D->Update(time);
 
 	return nullptr;
@@ -86,6 +95,7 @@ void ScenePlay::Reset()
 	m_obj3D.reset();
 
 	delete m_gameTimer;
+	m_gameTimer = nullptr;
 
 }
 

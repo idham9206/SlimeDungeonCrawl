@@ -27,7 +27,7 @@ private:
 	std::unique_ptr<DirectX::AlphaTestEffect> m_batchEffect;
 	
 	// テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+	ID3D11ShaderResourceView* m_texture;
 
 	//仮のデバイスリソーシズ
 	DX::DeviceResources* m_deviceResources;
@@ -42,14 +42,14 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 
 	// オブジェクト制作に必要なものまとめ
-	void Create(DX::DeviceResources * deviceResources, DirectX::CommonStates* states, const wchar_t* textureAddress);
+	void Create(DX::DeviceResources * deviceResources, DirectX::CommonStates* states);
 
 public:
 	Obj2D();
 	~Obj2D();
 
 	//初期化
-	void Initialize(const wchar_t* textureAddress, DX::DeviceResources * deviceResources, DirectX::CommonStates* states);
+	void Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates* states);
 
 	// 更新
 	void Update(float elapsedTime);

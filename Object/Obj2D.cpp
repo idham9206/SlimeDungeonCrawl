@@ -14,10 +14,10 @@ Obj2D::~Obj2D()
 {
 }
 
-void Obj2D::Initialize(const wchar_t* textureAddress, DX::DeviceResources * deviceResources, DirectX::CommonStates* states)
+void Obj2D::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates* states)
 {
 
-	Create(deviceResources, states, textureAddress);
+	Create(deviceResources, states);
 
 	m_spriteFrame.x = 0.0f;
 	m_spriteFrame.y = 0.0f;
@@ -65,7 +65,7 @@ void Obj2D::Render(Vector3 cameraEye, DirectX::SimpleMath::Matrix view,
 
 }
 
-void Obj2D::Create(DX::DeviceResources * deviceResources, DirectX::CommonStates* states, const wchar_t* textureAddress)
+void Obj2D::Create(DX::DeviceResources * deviceResources, DirectX::CommonStates* states)
 {
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	//引数から設定する
@@ -93,10 +93,6 @@ void Obj2D::Create(DX::DeviceResources * deviceResources, DirectX::CommonStates*
 		m_inputLayout.GetAddressOf());
 	// プリミティブバッチの作成
 	m_batch = std::make_unique<PrimitiveBatch<VertexPositionTexture>>(context);
-
-	//テクスチャー制作
-	CreateWICTextureFromFile(device, textureAddress,
-		nullptr, m_texture.GetAddressOf());
 
 }
 
@@ -133,7 +129,7 @@ void Obj2D::DrawSprite3D(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath:
 	//m_batchEffect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
 	//m_batchEffect->SetView(DirectX::SimpleMath::Matrix::Identity);
 	//m_batchEffect->SetProjection(DirectX::SimpleMath::Matrix::Identity);
-	m_batchEffect->SetTexture(m_texture.Get());
+	m_batchEffect->SetTexture(m_texture);
 	m_batchEffect->Apply(context);
 	context->IASetInputLayout(m_inputLayout.Get());
 	/// <summary>

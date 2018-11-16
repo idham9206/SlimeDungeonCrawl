@@ -8,7 +8,7 @@ class Obj3D
 protected:
 
 	// モデルハンドル
-	std::unique_ptr<DirectX::Model> m_model;
+	DirectX::Model* m_model;
 
 	//仮のデバイスリソーシズ
 	DX::DeviceResources* m_deviceResources;
@@ -31,7 +31,7 @@ public:
 	Obj3D();
 
 	//初期化
-	void Initialize(const wchar_t* textureAddress, DX::DeviceResources* deviceResources, DirectX::CommonStates* states);
+	void Initialize(DX::DeviceResources* deviceResources, DirectX::CommonStates* states);
 
 	// 更新
 	void Update(float elapsedTime);
@@ -40,7 +40,7 @@ public:
 	void Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection);
 
 	//// モデルハンドルを設定する関数
-	//void SetModel(DirectX::Model* model) { m_model = model; }
+	void SetModel(DirectX::Model* model) { m_model = model; }
 
 	// 位置を設定する関数
 	void SetPosition(DirectX::SimpleMath::Vector3 position) { m_position = position; }

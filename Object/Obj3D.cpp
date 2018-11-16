@@ -9,7 +9,7 @@ Obj3D::Obj3D()
 {
 }
 
-void Obj3D::Initialize(const wchar_t* textureAddress, DX::DeviceResources* deviceResources, CommonStates* states)
+void Obj3D::Initialize(DX::DeviceResources* deviceResources, CommonStates* states)
 {
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	//ˆø”‚©‚çİ’è‚·‚é
@@ -21,9 +21,6 @@ void Obj3D::Initialize(const wchar_t* textureAddress, DX::DeviceResources* devic
 
 	EffectFactory fx(device);
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-
-	//ƒ‚ƒfƒ‹§ì
-	m_model = Model::CreateFromCMO(device, textureAddress, fx);
 
 }
 

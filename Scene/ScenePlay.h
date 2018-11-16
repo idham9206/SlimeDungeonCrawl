@@ -16,9 +16,6 @@ public:
 	void Reset() override;
 
 private:
-	// テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
-	
 	//ゲーム内のタイマーハンドル
 	float m_gameTimerCD;
 	Number* m_gameTimer;
@@ -29,10 +26,11 @@ private:
 
 	//プレイヤーのハンドル
 	std::unique_ptr<Obj2D> m_player;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture;
 
 	//タイルのハンドル
 	std::unique_ptr<Obj3D> m_obj3D;
-
+	std::unique_ptr<DirectX::Model> m_model;
 
 	//
 	DirectX::SimpleMath::Vector3 playerPositionToCamera();
