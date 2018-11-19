@@ -39,11 +39,11 @@ private:
 	//スコア
 	int m_numberCount;
 	// スプライトバッチ
-	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
+	std::unique_ptr<DirectX::SpriteBatch>				m_sprites;
 	// テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	m_texture;
 	// コモンステート
-	std::unique_ptr<DirectX::CommonStates> m_states;
+	std::unique_ptr<DirectX::CommonStates>				 m_states;
 
 	//表示の位値
 	DirectX::SimpleMath::Vector2 m_position;

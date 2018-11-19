@@ -266,6 +266,8 @@ void Game::OnDeviceLost()
 
 	m_scene->Reset();
 
+	delete m_scene;
+	m_scene = nullptr;
 }
 
 void Game::OnDeviceRestored()

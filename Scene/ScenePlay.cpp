@@ -96,7 +96,7 @@ void ScenePlay::Reset()
 	// スプライトバッチの解放
 	m_sprites.reset();
 	m_player.reset();
-
+	
 
 	delete m_gameTimer;
 	m_gameTimer = nullptr;

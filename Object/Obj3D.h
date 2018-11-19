@@ -30,6 +30,8 @@ public:
 	// コンストラクタ
 	Obj3D();
 
+
+
 	//初期化
 	void Initialize(DX::DeviceResources* deviceResources, DirectX::CommonStates* states);
 

@@ -12,6 +12,11 @@ Number::Number(DirectX::SimpleMath::Vector2 position, DirectX::SimpleMath::Vecto
 
 Number::~Number()
 {
+	m_sprites.reset();
+
+	m_texture.Reset();
+
+	m_states.reset();
 }
 
 void Number::Initialize()

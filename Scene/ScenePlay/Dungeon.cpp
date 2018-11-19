@@ -12,6 +12,32 @@ Dungeon::Dungeon()
 
 Dungeon::~Dungeon()
 {
+	for (int i = 0; i < MAZE_WIDTH; i++)
+	{
+		for (int j = 0; j < MAZE_HEIGHT; j++)
+		{
+			for (int k = 0; k < MAZE_LENGTH; k++)
+			{
+				if (m_block[i][j][k] != nullptr)
+				{
+					m_block[i][j][k].reset();
+					m_block[i][j][k] = nullptr;
+
+				}
+
+			}
+		}
+	}
+
+	for (int i = 0; i < TILE_ID; i++)
+	{
+		if (m_model[i] != nullptr)
+		{
+			m_model[i].reset();
+			m_model[i] = nullptr;
+
+		}
+	}
 }
 
 void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates * states)
@@ -107,7 +133,8 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 
 		}
 	}
-
+	delete m_loader;
+	m_loader = nullptr;
 }
 
 void Dungeon::Update(float elapsedTime)

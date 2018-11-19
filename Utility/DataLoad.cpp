@@ -18,6 +18,19 @@ DataLoad::DataLoad()
 
 DataLoad::~DataLoad()
 {
+	// データ領域の破棄
+	for (int i = 0; i < m_mapWidth; i++)
+	{
+		for (int j = 0; j < m_mapHeight; j++)
+		{
+			delete m_data[i][j];
+			m_data[i][j] = nullptr;
+		}
+		delete m_data[i];
+		m_data[i] = nullptr;
+	}
+	delete m_data;
+	m_data = nullptr;
 }
 
 void DataLoad::Feed()
@@ -50,8 +63,7 @@ bool DataLoad::LoadData(const wchar_t * filename)
 	// ファイルの読み込み -------------------------------------------
 	string line;      // 1行用バッファ
 
-
-					  // ヘッダの読み込み
+	// ヘッダの読み込み
 	if (getline(ifs, line))
 	{
 		char delimiter;
@@ -114,6 +126,8 @@ bool DataLoad::LoadData(const wchar_t * filename)
 		gz++;
 
 	}
+
+	
 
 	return true;    // 読み込み成功
 }
