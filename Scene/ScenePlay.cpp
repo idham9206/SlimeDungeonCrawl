@@ -1,9 +1,12 @@
 #include "..\pch.h"
 #include "ScenePlay.h"
 
+#include "..\\Utility\\ADX2\ADX2Le.h"
+
+
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
-//using namespace MyLibrary;
+using namespace MyLibrary;
 
 ScenePlay::ScenePlay()
 {
@@ -50,6 +53,18 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	m_player->Initialize(m_deviceResources, m_states);
 	m_player->SetDungeon(m_dungeon);
 
+	// スプライトバッチの作成
+	m_spritesShadow = std::make_unique<SpriteBatch>(context);
+
+	// テクスチャのロード
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\shadowbg1.png", nullptr, m_textureShadow.GetAddressOf());
+
+
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->Initialize(L"BGMTest.acf");
+	adx2le->LoadAcb(L"CueSheet_0.acb", L"CueSheet_0.awb");
+	adx2le->Play(0);
+
 }
 
 SceneBase * ScenePlay::Update(float elapsedTime)
@@ -65,6 +80,10 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 
 	//プレイヤーの更新
 	m_player->Update(elapsedTime);
+
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+
+	adx2le->Update();
 
 	return nullptr;
 }
@@ -86,6 +105,11 @@ void ScenePlay::Render()
 
 	m_dungeon->Render(m_view, m_projection);
 
+	// スプライトの描画
+	m_spritesShadow->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
+	m_spritesShadow->Draw(m_textureShadow.Get(), Vector2::Zero);
+	m_spritesShadow->End();
+
 	m_gameTimer->Draw();
 
 }
@@ -94,8 +118,11 @@ void ScenePlay::Reset()
 {
 	// スプライトバッチの解放
 	m_sprites.reset();
+	m_sprites = nullptr;
+	m_spritesShadow.reset();
+	m_spritesShadow = nullptr;
 	m_player.reset();
-	
+	m_player = nullptr;
 
 	delete m_gameTimer;
 	m_gameTimer = nullptr;

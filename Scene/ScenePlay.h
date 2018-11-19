@@ -35,4 +35,9 @@ private:
 	Dungeon* m_dungeon;
 
 	std::unique_ptr<Player> m_player;
+
+	// ブラックアウトエフェクトスプライトバッチ
+	std::unique_ptr<DirectX::SpriteBatch> m_spritesShadow;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow;
+
 };
