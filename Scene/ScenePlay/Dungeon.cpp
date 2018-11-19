@@ -55,6 +55,7 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 	//データ制作
 	m_loader = new DataLoad();
 	m_loader->LoadData(L"Stage00.csv");
+
 	//モデル制作
 	m_model[TILE_BLOCK1] = Model::CreateFromCMO(device, L"Resources\\Models\\box.cmo", fx);
 	m_model[TILE_BLOCK2] = Model::CreateFromCMO(device, L"Resources\\Models\\box5.cmo", fx);
@@ -108,14 +109,14 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 					m_block[i][j][k] = std::make_unique<Obj3D>();
 					m_block[i][j][k]->Initialize(m_deviceResources, m_states);
 					m_block[i][j][k]->SetModel(m_model[TILE_BLOCK1].get());
-					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, (float)k));
+					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
 					break;
 
 				case TILE_BLOCK2:
 					m_block[i][j][k] = std::make_unique<Obj3D>();
 					m_block[i][j][k]->Initialize(m_deviceResources, m_states);
 					m_block[i][j][k]->SetModel(m_model[TILE_BLOCK2].get());
-					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, (float)k));
+					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
 					break;
 
 				case TILE_GOAL:

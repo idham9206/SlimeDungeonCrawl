@@ -82,10 +82,9 @@ void ScenePlay::Render()
 	//ƒrƒ…[s—ñ‚Ìì¬
 	m_view = Matrix::CreateLookAt(eye, target, Vector3::Up);
 
-	
-	m_dungeon->Render(m_view, m_projection);
-
 	m_player->Render(eye, m_view, m_projection);
+
+	m_dungeon->Render(m_view, m_projection);
 
 	m_gameTimer->Draw();
 
