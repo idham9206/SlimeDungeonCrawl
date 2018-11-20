@@ -16,6 +16,8 @@ Player::~Player()
 
 void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates * states)
 {
+	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+	//ˆø”‚©‚çÝ’è‚·‚é
 	ID3D11Device* device = deviceResources->GetD3DDevice();
 	ID3D11DeviceContext* context = deviceResources->GetD3DDeviceContext();
 

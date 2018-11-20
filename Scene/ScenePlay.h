@@ -14,12 +14,18 @@ public:
 	ScenePlay();
 	~ScenePlay();
 
+	//初期化
 	void Initialize(DX::DeviceResources* deviceResources, DirectX::CommonStates* states) override;
+	//更新
 	SceneBase* Update(float elapsedTime) override;
+	//描画
 	void Render() override;
+	//解放
 	void Reset() override;
 
+	//
 	bool IsMovable(DirectX::SimpleMath::Vector3 position);
+	//
 	bool IsGoal(DirectX::SimpleMath::Vector3 position);
 
 
@@ -34,6 +40,7 @@ private:
 	//ダンジョンのハンドル
 	Dungeon* m_dungeon;
 
+	//プレイヤーのハンドル
 	std::unique_ptr<Player> m_player;
 
 	// ブラックアウトエフェクトスプライトバッチ

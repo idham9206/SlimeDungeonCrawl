@@ -142,6 +142,8 @@ void Number::Draw()
 
 void Number::Create(DX::DeviceResources * deviceResources, const wchar_t* textureAddress)
 {
+	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+	//引数から設定する
 	m_deviceResources = deviceResources;
 	ID3D11Device* device = m_deviceResources->GetD3DDevice();
 	ID3D11DeviceContext* context = m_deviceResources->GetD3DDeviceContext();
@@ -152,6 +154,7 @@ void Number::Create(DX::DeviceResources * deviceResources, const wchar_t* textur
 
 	// コモンステートの作成
 	m_states = std::make_unique<DirectX::CommonStates>(device);
+	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
 	// テクスチャのロード
 	DirectX::CreateWICTextureFromFile(device, textureAddress, nullptr, m_texture.GetAddressOf());
