@@ -27,8 +27,11 @@ void Obj3D::Initialize(DX::DeviceResources* deviceResources, CommonStates* state
 void Obj3D::Update(float elapsedTime)
 {
 	// ƒ[ƒ‹ƒhs—ñ‚ğì¬
-	m_world = Matrix::CreateFromQuaternion(m_rotation)
-			* Matrix::CreateTranslation(m_position);
+	m_world =	Matrix::CreateFromQuaternion(m_rotation)
+			*	Matrix::CreateTranslation(m_position)
+			*	Matrix::CreateScale(1.0f);
+
+	
 }
 
 void Obj3D::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection)

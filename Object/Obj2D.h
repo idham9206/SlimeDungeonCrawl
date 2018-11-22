@@ -11,6 +11,8 @@ private:
 	// 回転
 	DirectX::SimpleMath::Quaternion m_rotation;
 
+	DirectX::SimpleMath::Vector2 m_scale;
+
 	// ワールド行列
 	DirectX::SimpleMath::Matrix m_world;
 
@@ -71,5 +73,7 @@ public:
 		const DirectX::SimpleMath::Matrix& projection, DirectX::SimpleMath::Vector4& spriteFrame);
 	//プレイヤーの位置を取得する関数
 	DirectX::SimpleMath::Vector3 GetPosition() { return m_position; }
+
+	DirectX::SimpleMath::Matrix Scale(float x, float y);
 };
 

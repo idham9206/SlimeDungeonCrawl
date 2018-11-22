@@ -9,6 +9,8 @@ using namespace DirectX::SimpleMath;
 using namespace MyLibrary;
 
 ScenePlay::ScenePlay()
+	: /*m_effectManager(nullptr),*/ m_dungeon(nullptr), m_gameTimer(nullptr)
+
 {
 }
 
@@ -67,6 +69,13 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	adx2le->LoadAcb(L"CueSheet_0.acb", L"CueSheet_0.awb");
 	adx2le->Play(0);
 
+
+	//m_effectManager = new EffectManager();
+	//m_effectManager->Create(m_deviceResources, 1);
+	//m_effectManager->Initialize(5, Vector3(0, 0, 0), Vector3(0, 0, 0));
+
+	//m_effectManager->SetRenderState(m_player->playerPositionToCamera(), m_view, m_projection);
+
 }
 
 SceneBase * ScenePlay::Update(float elapsedTime)
@@ -81,11 +90,13 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 	m_dungeon->Update(time);
 
 	//プレイヤーの更新
-	m_player->Update(elapsedTime);
+	m_player->Update(time);
 
 	//音更新
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Update();
+
+	//m_effectManager->Update(time);
 
 	return nullptr;
 }
@@ -117,6 +128,9 @@ void ScenePlay::Render()
 	//タイマー描画
 	m_gameTimer->Draw();
 
+	//m_effectManager->Render();
+
+
 }
 
 void ScenePlay::Reset()
@@ -138,6 +152,13 @@ void ScenePlay::Reset()
 	//ダンジョンの解放
 	delete m_dungeon;
 	m_dungeon = nullptr;
+
+	////
+	//if (m_effectManager != nullptr) {
+	//	m_effectManager->Lost();
+	//	delete m_effectManager;
+	//	m_effectManager = nullptr;
+	//}
 
 	//音の解放
 	ADX2Le* adx2le = ADX2Le::GetInstance();

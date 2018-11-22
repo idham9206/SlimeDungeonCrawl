@@ -56,11 +56,12 @@ void Obj2D::Render(Vector3 cameraEye, DirectX::SimpleMath::Matrix view,
 	const DirectX::SimpleMath::Matrix& projection)
 {
 	Matrix world;
-	world = Matrix::CreateBillboard(
+	world = Scale(m_scale.x, m_scale.y) * Matrix::CreateBillboard(
 		Vector3((float)this->m_position.x, (float) this->m_position.y, (float) this->m_position.z),
 		cameraEye,
 		Vector3::Up
 	);
+
 	DrawSprite3D(world, view, projection, m_spriteFrame);
 
 }
@@ -126,9 +127,6 @@ void Obj2D::DrawSprite3D(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath:
 	m_batchEffect->SetWorld(world);
 	m_batchEffect->SetView(view);
 	m_batchEffect->SetProjection(projection);
-	//m_batchEffect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
-	//m_batchEffect->SetView(DirectX::SimpleMath::Matrix::Identity);
-	//m_batchEffect->SetProjection(DirectX::SimpleMath::Matrix::Identity);
 	m_batchEffect->SetTexture(m_texture);
 	m_batchEffect->Apply(context);
 	context->IASetInputLayout(m_inputLayout.Get());
@@ -160,4 +158,16 @@ void Obj2D::DrawSprite3D(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath:
 	m_batch->End();
 
 
+}
+
+DirectX::SimpleMath::Matrix Obj2D::Scale(float x, float y)
+{
+	Matrix scale;
+	
+	scale = Matrix{
+		Vector3(x, 0, 0),
+		Vector3(0, y, 0),
+		Vector3(0, 0, 1),
+	};
+	return scale;
 }

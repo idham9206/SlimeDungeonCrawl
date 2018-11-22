@@ -5,6 +5,9 @@
 #include "..\Object\Obj2D.h"
 #include "..\Object\Obj3D.h"
 
+//#include "..\Effect\Myeffect.h"
+//#include "..\Effect\EffectManager.h"
+
 #include "ScenePlay\Dungeon.h"
 #include "ScenePlay\Player.h"
 
@@ -46,5 +49,8 @@ private:
 	// ブラックアウトエフェクトスプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_spritesShadow;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow;
+
+
+	//EffectManager*							m_effectManager;
 
 };
