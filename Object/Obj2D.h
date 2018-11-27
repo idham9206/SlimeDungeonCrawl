@@ -24,7 +24,8 @@ private:
 
 	float m_frametime;
 
-	const float FRAME_SIZE = 0.25f;
+	int m_frameCountX;
+	int m_frameCountY;
 
 	std::unique_ptr<DirectX::AlphaTestEffect> m_batchEffect;
 	
@@ -51,7 +52,7 @@ public:
 	~Obj2D();
 
 	//èâä˙âª
-	void Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates* states);
+	void Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates* states, int frameCountX, int frameCountY = 1);
 
 	// çXêV
 	void Update(float elapsedTime);

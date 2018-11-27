@@ -32,7 +32,7 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\charatest(front).png", nullptr, m_playerTexture.GetAddressOf());
 	m_player = std::make_unique<Obj2D>();
 	m_player->SetPosition(Vector3(5.0f, 1.0f, 5.0f));
-	m_player->Initialize(deviceResources, states);
+	m_player->Initialize(deviceResources, states, 4);
 	m_player->SetTexture(m_playerTexture.Get());
 
 	m_CD = 10;
@@ -50,7 +50,7 @@ void Player::Update(float elapsedTime)
 		{
 			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))))
 			{
-				m_player->SetPosition(Vector3((int)position.x, (int)position.y, (int)position.z - 1.0f));
+				m_player->SetPosition(Vector3(position.x, position.y, position.z - 1.0f));
 				m_CD = 10;
 			}
 			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))) &&
@@ -89,7 +89,7 @@ void Player::Update(float elapsedTime)
 
 			if (m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))))
 			{
-				m_player->SetPosition(Vector3((int)position.x + 1, (int)position.y, (int)position.z));
+				m_player->SetPosition(Vector3(position.x + 1, position.y, position.z));
 				m_CD = 10;
 
 			}
