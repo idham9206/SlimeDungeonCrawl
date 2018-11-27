@@ -26,10 +26,6 @@ public:
 	//‰ð•ú
 	void Reset() override;
 
-	//
-	bool IsMovable(DirectX::SimpleMath::Vector3 position);
-	//
-	bool IsGoal(DirectX::SimpleMath::Vector3 position);
 
 
 private:

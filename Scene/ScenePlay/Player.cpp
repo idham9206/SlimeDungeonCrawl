@@ -35,111 +35,12 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 	m_player->Initialize(deviceResources, states, 4);
 	m_player->SetTexture(m_playerTexture.Get());
 
-	m_CD = 10;
 }
 
 void Player::Update(float elapsedTime)
 {
-	auto kb = Keyboard::Get().GetState();
-	m_tracker.Update(kb);
-	Vector3 position = m_player->GetPosition();
-	m_CD--;
-	if (m_CD < 0)
-	{
-		if (m_tracker.IsKeyPressed(DirectX::Keyboard::Up))
-		{
-			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))))
-			{
-				m_player->SetPosition(Vector3(position.x, position.y, position.z - 1.0f));
-				m_CD = 10;
-			}
-			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))) &&
-				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z - 1.0f))))
-			{
-				if (m_CD < 0)
-				{
-					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z - 1.0f));
-					m_CD = 10;
-				}
-			}
-		}
-		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Down))
-		{
-
-			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))))
-			{
-				m_player->SetPosition(Vector3(position.x, position.y, position.z + 1.0f));
-				m_CD = 10;
-
-			}
-			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))) &&
-				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z + 1.0f))))
-			{
-				if (m_CD < 0)
-				{
-					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z + 1.0f));
-					m_CD = 10;
-				}
-			}
-
-
-		}
-		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Right))
-		{
-
-			if (m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))))
-			{
-				m_player->SetPosition(Vector3(position.x + 1, position.y, position.z));
-				m_CD = 10;
-
-			}
-			else if (!m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))) &&
-				m_dungeon->IsMovable(Vector3((position.x + 1.0f), (position.y + 1.0f), (position.z))))
-			{
-				if (m_CD < 0)
-				{
-					m_player->SetPosition(Vector3(position.x + 1.0f, position.y + 1.0f, position.z));
-					m_CD = 10;
-				}
-			}
-
-		}
-		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Left))
-		{
-
-			if (m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))))
-			{
-				m_player->SetPosition(Vector3(position.x - 1.0f, position.y, position.z));
-				m_CD = 10;
-
-			}
-			else if (!m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))) &&
-				m_dungeon->IsMovable(Vector3((position.x - 1.0f), (position.y + 1.0f), (position.z))))
-			{
-				if (m_CD < 0)
-				{
-					m_player->SetPosition(Vector3(position.x - 1.0f, position.y + 1.0f, position.z));
-					m_CD = 10;
-				}
-			}
-
-
-		}
-
-		if (m_dungeon->IsMovable(Vector3((position.x), (position.y - 1.0f), (position.z))))
-		{
-			if (m_dungeon->IsMovable(Vector3((position.x), (position.y), (position.z))))
-			{
-				m_player->SetPosition(Vector3(position.x, position.y - 1.0f , position.z));
-
-			}
-			m_CD = 10;
-
-		}
-
-
-
-	}
+	//プレイヤーの動
+	Move();
 
 	//プレイヤーの更新
 	m_player->Update(elapsedTime);
@@ -163,5 +64,115 @@ DirectX::SimpleMath::Vector3 Player::playerPositionToCamera()
 {
 	//カメラの位置
 	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 5.0f, m_player->GetPosition().z + 5.0f);
+}
+
+void Player::Move()
+{
+	auto kb = Keyboard::Get().GetState();
+	m_tracker.Update(kb);
+
+	//プレイヤーの位置取得
+	Vector3 position = m_player->GetPosition();
+
+	//動きのカウントダウン
+	static int move_CD = 10;
+	move_CD--;
+
+	//カウントダウンゼロになったら動けるようにする。
+	if (move_CD < 0)
+	{
+		if (m_tracker.IsKeyPressed(DirectX::Keyboard::Up))
+		{
+			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))))
+			{
+				m_player->SetPosition(Vector3(position.x, position.y, position.z - 1.0f));
+				move_CD = 10;
+			}
+			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))) &&
+				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z - 1.0f))))
+			{
+				if (move_CD < 0)
+				{
+					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z - 1.0f));
+					move_CD = 10;
+				}
+			}
+		}
+		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Down))
+		{
+
+			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))))
+			{
+				m_player->SetPosition(Vector3(position.x, position.y, position.z + 1.0f));
+				move_CD = 10;
+
+			}
+			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))) &&
+				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z + 1.0f))))
+			{
+				if (move_CD < 0)
+				{
+					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z + 1.0f));
+					move_CD = 10;
+				}
+			}
+
+
+		}
+		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Right))
+		{
+
+			if (m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))))
+			{
+				m_player->SetPosition(Vector3(position.x + 1, position.y, position.z));
+				move_CD = 10;
+
+			}
+			else if (!m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))) &&
+				m_dungeon->IsMovable(Vector3((position.x + 1.0f), (position.y + 1.0f), (position.z))))
+			{
+				if (move_CD < 0)
+				{
+					m_player->SetPosition(Vector3(position.x + 1.0f, position.y + 1.0f, position.z));
+					move_CD = 10;
+				}
+			}
+
+		}
+		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Left))
+		{
+
+			if (m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))))
+			{
+				m_player->SetPosition(Vector3(position.x - 1.0f, position.y, position.z));
+				move_CD = 10;
+
+			}
+			else if (!m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))) &&
+				m_dungeon->IsMovable(Vector3((position.x - 1.0f), (position.y + 1.0f), (position.z))))
+			{
+				if (move_CD < 0)
+				{
+					m_player->SetPosition(Vector3(position.x - 1.0f, position.y + 1.0f, position.z));
+					move_CD = 10;
+				}
+			}
+
+
+		}
+
+		if (m_dungeon->IsMovable(Vector3((position.x), (position.y - 1.0f), (position.z))))
+		{
+			if (m_dungeon->IsMovable(Vector3((position.x), (position.y), (position.z))))
+			{
+				m_player->SetPosition(Vector3(position.x, position.y - 1.0f, position.z));
+
+			}
+			move_CD = 10;
+
+		}
+	}
+
+
 }
 

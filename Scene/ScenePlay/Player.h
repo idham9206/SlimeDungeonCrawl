@@ -17,6 +17,9 @@ public:
 	//
 	DirectX::SimpleMath::Vector3 playerPositionToCamera();
 
+	//“®‚«•û
+	void Move();
+
 	DirectX::SimpleMath::Vector3 GetPosition() { return m_player->GetPosition(); }
 	
 	void SetPosition(DirectX::SimpleMath::Vector3 position) { m_player->SetPosition(position); }

@@ -167,13 +167,4 @@ void ScenePlay::Reset()
 
 }
 
-bool ScenePlay::IsMovable(DirectX::SimpleMath::Vector3 position)
-{
-	return m_dungeon->IsMovable(position);
-}
-
-bool ScenePlay::IsGoal(DirectX::SimpleMath::Vector3 position)
-{
-	return m_dungeon->IsGoal(position);
-}
 
