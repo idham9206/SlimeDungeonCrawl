@@ -80,6 +80,7 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 SceneBase * ScenePlay::Update(float elapsedTime)
 {
+
 	//ゲームタイマー
 	float time = elapsedTime;
 	m_gameTimerCD -= time;
@@ -107,7 +108,7 @@ void ScenePlay::Render()
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
 	//カメラの位置
-	Vector3 eye = m_player->playerPositionToCamera();
+	Vector3 eye = PlayerPositionToCamera();
 	//注視点の位置
 	Vector3 target = m_player->GetPosition();
 
@@ -166,5 +167,12 @@ void ScenePlay::Reset()
 
 
 }
+
+DirectX::SimpleMath::Vector3 ScenePlay::PlayerPositionToCamera()
+{
+
+	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 5.0f, m_player->GetPosition().z + 5.0f);
+}
+
 
 

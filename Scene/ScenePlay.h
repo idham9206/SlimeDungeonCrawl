@@ -1,3 +1,8 @@
+////====================================================////
+////			　	プレイシーンのクラス	　			////
+////													////
+////				作者：ムハマドイダム				////
+////====================================================////
 #pragma once
 #include "SceneBase.h"
 
@@ -26,7 +31,7 @@ public:
 	//解放
 	void Reset() override;
 
-
+	DirectX::SimpleMath::Vector3 PlayerPositionToCamera();
 
 private:
 	//ゲーム内のタイマーハンドル
@@ -46,6 +51,8 @@ private:
 	std::unique_ptr<DirectX::SpriteBatch> m_spritesShadow;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow;
 
+	//キーボードの押したらの情報ハンドル
+	DirectX::Keyboard::KeyboardStateTracker m_tracker;
 
 	//EffectManager*							m_effectManager;
 

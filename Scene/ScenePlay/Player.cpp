@@ -1,11 +1,14 @@
 #include "..\..\pch.h"
 #include "Player.h"
 #include "Dungeon.h"
+#include "..\..\Utility\Utility.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-Player::Player()
+Player::Player():
+	m_dungeon(nullptr), m_deviceResources(nullptr),
+	m_movingDirection(DIR_NONE), m_speed(0.1f)
 {
 }
 
@@ -18,8 +21,9 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 {
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	//引数から設定する
-	ID3D11Device* device = deviceResources->GetD3DDevice();
-	ID3D11DeviceContext* context = deviceResources->GetD3DDeviceContext();
+	m_deviceResources = deviceResources;
+	ID3D11Device* device = m_deviceResources->GetD3DDevice();
+	ID3D11DeviceContext* context = m_deviceResources->GetD3DDeviceContext();
 
 	// モデルを読み込む
 	EffectFactory fx(device);
@@ -29,150 +33,136 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
 	//オブジェクト2D情報取得する
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\charatest(front).png", nullptr, m_playerTexture.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\charatest(frontmove).png", nullptr, m_playerTexture.GetAddressOf());
 	m_player = std::make_unique<Obj2D>();
 	m_player->SetPosition(Vector3(5.0f, 1.0f, 5.0f));
-	m_player->Initialize(deviceResources, states, 4);
+	m_player->Initialize(m_deviceResources, states, 8);
 	m_player->SetTexture(m_playerTexture.Get());
 
 }
 
 void Player::Update(float elapsedTime)
 {
-	//プレイヤーの動
-	Move();
 
-	//プレイヤーの更新
+	//オブジェクト2Dの更新
 	m_player->Update(elapsedTime);
-
+	Move();
 }
 
 void Player::Render(Vector3 eye, Matrix view, Matrix projection)
 {
-
+	//オブジェクト2Dの描画
 	m_player->Render(eye, view, projection);
 
 }
 
 void Player::Reset()
 {
+	//オブジェクト2Dの解放
 	m_player.reset();
 
 }
 
-DirectX::SimpleMath::Vector3 Player::playerPositionToCamera()
-{
-	//カメラの位置
-	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 5.0f, m_player->GetPosition().z + 5.0f);
-}
-
+//オブジェクト2Dの動
 void Player::Move()
 {
+	//キーボードのハンドル
 	auto kb = Keyboard::Get().GetState();
-	m_tracker.Update(kb);
+	//m_tracker.Update(kb);
 
 	//プレイヤーの位置取得
 	Vector3 position = m_player->GetPosition();
 
-	//動きのカウントダウン
-	static int move_CD = 10;
-	move_CD--;
 
-	//カウントダウンゼロになったら動けるようにする。
-	if (move_CD < 0)
+	Direction nextMovingDirection = DIR_NONE;
+	
+	if (kb.Up)  nextMovingDirection = DIR_UP;
+	else if (kb.Down)  nextMovingDirection = DIR_DOWN;
+	else if (kb.Right)  nextMovingDirection = DIR_RIGHT;
+	else if (kb.Left)  nextMovingDirection = DIR_LEFT;
+
+
+	if (nextMovingDirection != DIR_NONE)
 	{
-		if (m_tracker.IsKeyPressed(DirectX::Keyboard::Up))
-		{
-			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))))
-			{
-				m_player->SetPosition(Vector3(position.x, position.y, position.z - 1.0f));
-				move_CD = 10;
-			}
-			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))) &&
-				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z - 1.0f))))
-			{
-				if (move_CD < 0)
-				{
-					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z - 1.0f));
-					move_CD = 10;
-				}
-			}
-		}
-		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Down))
-		{
-
-			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))))
-			{
-				m_player->SetPosition(Vector3(position.x, position.y, position.z + 1.0f));
-				move_CD = 10;
-
-			}
-			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))) &&
-				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z + 1.0f))))
-			{
-				if (move_CD < 0)
-				{
-					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z + 1.0f));
-					move_CD = 10;
-				}
-			}
-
-
-		}
-		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Right))
-		{
-
-			if (m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))))
-			{
-				m_player->SetPosition(Vector3(position.x + 1, position.y, position.z));
-				move_CD = 10;
-
-			}
-			else if (!m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))) &&
-				m_dungeon->IsMovable(Vector3((position.x + 1.0f), (position.y + 1.0f), (position.z))))
-			{
-				if (move_CD < 0)
-				{
-					m_player->SetPosition(Vector3(position.x + 1.0f, position.y + 1.0f, position.z));
-					move_CD = 10;
-				}
-			}
-
-		}
-		else if (m_tracker.IsKeyPressed(DirectX::Keyboard::Left))
-		{
-
-			if (m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))))
-			{
-				m_player->SetPosition(Vector3(position.x - 1.0f, position.y, position.z));
-				move_CD = 10;
-
-			}
-			else if (!m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))) &&
-				m_dungeon->IsMovable(Vector3((position.x - 1.0f), (position.y + 1.0f), (position.z))))
-			{
-				if (move_CD < 0)
-				{
-					m_player->SetPosition(Vector3(position.x - 1.0f, position.y + 1.0f, position.z));
-					move_CD = 10;
-				}
-			}
-
-
-		}
-
-		if (m_dungeon->IsMovable(Vector3((position.x), (position.y - 1.0f), (position.z))))
-		{
-			if (m_dungeon->IsMovable(Vector3((position.x), (position.y), (position.z))))
-			{
-				m_player->SetPosition(Vector3(position.x, position.y - 1.0f, position.z));
-
-			}
-			move_CD = 10;
-
-		}
+		m_movingDirection = PMove(nextMovingDirection);
 	}
 
 
 }
 
+
+
+Direction Player::PMove(Direction nextDirection)
+{
+
+	// ローカル変数の定義 -----------------------------------
+	Vector3 velocity = Vector3::Zero;    // 速度
+	float   speed = m_speed;          // 速さ
+	Vector3 position = m_player->GetPosition(); //プレイヤーの位置
+	Vector3 center = m_player->GetPosition();       // 現在位置のグリッド座標の中心座標
+
+	if (m_movingDirection == Direction::DIR_NONE)
+	{
+		m_movingDirection = nextDirection;
+	}
+
+
+	// 直角に方向転換する場合 --------------------------------
+	if (m_movingDirection % 2 != nextDirection % 2)
+	{
+		Vector3 differenceVector = center - position;          // 中心座標と現在位置の差分ベクトル
+		float distance = position.Length();    // 中心座標と現在位置との距離
+
+		if (distance < m_speed)    // このフレームで中心にたどり着ける場合
+		{
+			Vector3 nextMovingDirectionVector = DIRECTION_VECTOR[nextDirection]; // 次回の移動方向ベクトルの算出
+			Vector3 destination = nextMovingDirectionVector;   // 目的地
+
+			if (m_dungeon->IsMovable(destination)) // 移動可能の場合
+			{
+				velocity = differenceVector;
+				speed -= distance;
+				velocity += nextMovingDirectionVector * speed;
+			}
+			else    // 移動不可能の場合
+			{
+				nextDirection = m_movingDirection;    // 指定の方向を現在の進行方向に変更
+			}
+		}
+		else    // このフレームで中心にたどり着けない場合
+		{
+			nextDirection = m_movingDirection;    // 指定の方向を現在の進行方向に変更
+		}
+	}
+
+
+	// 直角に方向転換しない場合 or 直角に方向転換できなかった場合 --------
+	if (m_movingDirection % 2 == nextDirection % 2)
+	{
+		Vector3 nextMovingDirectionVector = DIRECTION_VECTOR[nextDirection];    // 方向ベクトルの算出
+		velocity = nextMovingDirectionVector * speed;
+
+		Vector3 nextPosition = position + velocity;    // 移動予定の位置
+
+		Vector3 destination = nextMovingDirectionVector;   // 目的地
+		Vector3 destinationCenter = destination;                      // 目的地の中心座標
+
+		Vector3 differenceVector = destinationCenter - nextPosition;   // 目的地の中心座標と移動予定の位置の差分ベクトル
+		float   distance = differenceVector.Length();          // 目的地の中心座標と移動予定の位置との距離
+
+		if (distance < 1.0f)    // 移動予定の位置が隣のセルにはみ出している場合
+		{
+			if (!m_dungeon->IsMovable(destination))
+			{
+				velocity = center - position;
+			}
+		}
+	}
+
+
+	// 移動処理 ------------------------------------
+	//position += velocity;    
+	m_player->SetPosition(position + velocity); // 速度分の移動
+
+	return nextDirection;
+}

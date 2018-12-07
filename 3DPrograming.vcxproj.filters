@@ -52,6 +52,7 @@
     <ClInclude Include="Object\Obj3D.h" />
     <ClInclude Include="Scene\ScenePlay\Dungeon.h" />
     <ClInclude Include="Scene\ScenePlay\Player.h" />
+    <ClInclude Include="Utility\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />

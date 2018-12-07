@@ -192,6 +192,7 @@
     <ClInclude Include="Utility\ADX2\ADX2Le.h" />
     <ClInclude Include="Utility\DataLoad.h" />
     <ClInclude Include="Utility\Number.h" />
+    <ClInclude Include="Utility\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugCamera.cpp" />

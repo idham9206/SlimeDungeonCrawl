@@ -57,7 +57,7 @@ void Obj2D::Update(float elapsedTime)
 	{
 		m_spriteFrame.w = (float)1 / m_frameCountX;
 	}
-	m_scale.x = cosf(x/30);
+	//m_scale.x = cosf(x/30);
 }
 
 void Obj2D::Render(Vector3 cameraEye, DirectX::SimpleMath::Matrix view,
