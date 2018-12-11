@@ -11,9 +11,11 @@ enum Direction
 {
 	DIR_NONE,      // 方向なし
 	DIR_RIGHT,     // 右
-	DIR_UP,        // 上
+	DIR_UP,        // 前
 	DIR_LEFT,      // 左
-	DIR_DOWN,      // 下
+	DIR_DOWN,      // 後ろ
+	DIR_JUMP,
+	DIR_FALL
 };
 
 // 方向ベクトル -----------------------------------------------------
@@ -24,6 +26,9 @@ static const DirectX::SimpleMath::Vector3 DIRECTION_VECTOR[] =
 	DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.0f),
 	DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f),
 	DirectX::SimpleMath::Vector3(0.0f, 0.0f, 1.0f),
+	//DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f),
+	//DirectX::SimpleMath::Vector3(0.0f, -1.0f, 0.0f),
+
 };
 
 
@@ -43,6 +48,8 @@ public:
 	//動き方
 	void Move();
 	Direction PMove(Direction nextMovingDirection);
+	void Climb();
+	void Fall();
 
 	//セッターゲッター関数まとめ
 	DirectX::SimpleMath::Vector3 GetPosition() { return m_player->GetPosition(); }
