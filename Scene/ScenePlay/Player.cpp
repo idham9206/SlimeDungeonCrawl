@@ -96,15 +96,12 @@ void Player::Move()
 		nextMovingDirection = DIR_LEFT;
 	}
 
-	//Climb();
 
 	if (nextMovingDirection != DIR_NONE)
 	{
 		m_movingDirection = PMove(nextMovingDirection);
-		//m_player->SetPosition(Vector3(position.x, position.y + 0.01f, position.z));
-
+		nextMovingDirection = DIR_NONE;
 	}
-	//Fall();
 
 }
 
@@ -213,7 +210,6 @@ Direction Player::PMove(Direction nextDirection)
 
 		Vector3 differenceVector = center - m_player->GetPosition();          // 中心座標と現在位置の差分ベクトル
 		float distance = differenceVector.Length();    // 中心座標と現在位置との距離
-
 		if (!m_dungeon->IsMovable(destination)) // 移動不可能の場合
 		{
 			if (m_dungeon->IsMovable(Vector3(destination.x, destination.y + 1.0f, destination.z)))
@@ -222,16 +218,16 @@ Direction Player::PMove(Direction nextDirection)
 				speed -= distance;
 				velocity += Vector3(0.0f, 1.0f, 0.0f);
 			}
+			if (m_dungeon->IsMovable(Vector3(destination.x, destination.y - 1.0f, destination.z)))
+			{
+				velocity = differenceVector;
+				speed -= distance;
+				velocity += Vector3(0.0f, -1.0f, 0.0f);
+			}
 
 		}
 
 
-		if (m_dungeon->IsMovable(Vector3(destination.x, destination.y - 1.0f, destination.z)))
-		{
-			velocity = differenceVector;
-			speed -= distance;
-			velocity += Vector3(0.0f, -1.0f, 0.0f);
-		}
 
 	}
 	
