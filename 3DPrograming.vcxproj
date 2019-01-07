@@ -188,6 +188,8 @@
     <ClInclude Include="Resources\Sounds\Test01\CueSheet_0.h" />
     <ClInclude Include="Scene\SceneBase.h" />
     <ClInclude Include="Scene\ScenePlay.h" />
+    <ClInclude Include="Scene\SceneResult.h" />
+    <ClInclude Include="Scene\SceneTitle.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Utility\ADX2\ADX2Le.h" />
     <ClInclude Include="Utility\DataLoad.h" />
@@ -219,6 +221,8 @@
     </ClCompile>
     <ClCompile Include="Scene\SceneBase.cpp" />
     <ClCompile Include="Scene\ScenePlay.cpp" />
+    <ClCompile Include="Scene\SceneResult.cpp" />
+    <ClCompile Include="Scene\SceneTitle.cpp" />
     <ClCompile Include="Utility\ADX2\ADX2Le.cpp" />
     <ClCompile Include="Utility\DataLoad.cpp" />
     <ClCompile Include="Utility\Number.cpp" />

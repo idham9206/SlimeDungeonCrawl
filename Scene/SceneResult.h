@@ -10,17 +10,11 @@
 #include "..\Object\Obj2D.h"
 #include "..\Object\Obj3D.h"
 
-//#include "..\Effect\Myeffect.h"
-//#include "..\Effect\EffectManager.h"
-
-#include "ScenePlay\Dungeon.h"
-#include "ScenePlay\Player.h"
-
-class ScenePlay : public SceneBase
+class SceneResult : public SceneBase
 {
 public:
-	ScenePlay();
-	~ScenePlay();
+	SceneResult();
+	~SceneResult();
 
 	//初期化
 	void Initialize(DX::DeviceResources* deviceResources, DirectX::CommonStates* states) override;
@@ -31,33 +25,19 @@ public:
 	//解放
 	void Reset() override;
 
-	DirectX::SimpleMath::Vector3 PlayerPositionToCamera();
 
 private:
-	//ゲーム内のタイマーハンドル
-	float m_gameTimerCD;
-	Number* m_gameTimer;
-
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteGoal;
 
-	//ダンジョンのハンドル
-	Dungeon* m_dungeon;
-
-	//プレイヤーのハンドル
-	std::unique_ptr<Player> m_player;
 
 	// ブラックアウトエフェクトスプライトバッチ
-	std::unique_ptr<DirectX::SpriteBatch> m_spritesShadow;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureGoal;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 
 	//キーボードの押したらの情報ハンドル
 	DirectX::Keyboard::KeyboardStateTracker m_tracker;
 
-	//
-	bool m_clearState;
-	//EffectManager*							m_effectManager;
+	float m_countdown;
+
 
 };

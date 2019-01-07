@@ -33,6 +33,7 @@ DataLoad::~DataLoad()
 	m_data = nullptr;
 }
 
+
 void DataLoad::Feed()
 {
 	for (int k = 0; k < m_mapLength; k++)

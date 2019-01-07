@@ -12,6 +12,8 @@
 
 #include "Scene\SceneBase.h"
 #include "Scene\ScenePlay.h"
+#include "Scene\SceneTitle.h"
+#include "Scene\SceneResult.h"
 
 
 #include "Object\Obj2D.h"

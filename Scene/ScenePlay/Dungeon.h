@@ -9,8 +9,11 @@ enum TileID : unsigned char
 	TILE_BLOCK1,
 	TILE_BLOCK2,
 	TILE_GOAL,
+	TILE_TRAP1,
 
-	TILE_ID
+	TILE_ID,
+
+	TILE_START = 99,
 };
 
 
@@ -56,6 +59,9 @@ public:
 	bool IDChecker(TileID tileID, DirectX::SimpleMath::Vector3 position);
 
 	bool IsMovable(DirectX::SimpleMath::Vector3 position);
+
+	bool IsClimbing(DirectX::SimpleMath::Vector3 position);
+	bool FallingDown(DirectX::SimpleMath::Vector3 position);
 
 	bool IsGoal(DirectX::SimpleMath::Vector3 position);
 

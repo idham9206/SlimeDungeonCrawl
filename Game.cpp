@@ -4,6 +4,7 @@
 
 #include "pch.h"
 #include "Game.h"
+#include "Utility\\ADX2\ADX2Le.h"
 
 #if _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -15,6 +16,7 @@ extern void ExitGame();
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
+using namespace MyLibrary;
 
 using Microsoft::WRL::ComPtr;
 
@@ -23,7 +25,7 @@ Game::Game()
     m_deviceResources = std::make_unique<DX::DeviceResources>();
     m_deviceResources->RegisterDeviceNotify(this);
 
-	m_scene = new ScenePlay();
+	m_scene = new SceneTitle();
 }
 
 // Initialize the Direct3D resources required to run.
@@ -48,6 +50,9 @@ void Game::Initialize(HWND window, int width, int height)
     CreateWindowSizeDependentResources();
 
 	m_scene->Initialize(m_deviceResources.get(), m_states.get());
+	//音楽の初期化
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->Initialize(L"BGMTest.acf");
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -83,6 +88,20 @@ void Game::Update(DX::StepTimer const& timer)
 
 	m_scene->Update(elapsedTime);
 
+	{	
+		SceneBase* next = nullptr;
+
+		next = m_scene->Update(elapsedTime);
+
+		if (next != nullptr)
+		{
+			m_scene->Reset();
+			delete m_scene;
+			m_scene = next;
+			m_scene->Initialize(m_deviceResources.get(), m_states.get());
+		}
+	}
+
 
 }
 #pragma endregion
@@ -115,7 +134,6 @@ void Game::Render()
 	m_scene->SetWorld(m_world);
 	m_scene->SetView(m_view);
 	m_scene->SetProjection(m_projection);
-	//m_scene->SetEye(m_debugCamera->GetEyePosition());
 	m_scene->Render();
 
 
@@ -265,9 +283,13 @@ void Game::OnDeviceLost()
 	//m_gridFloor.reset();
 
 	m_scene->Reset();
-
 	delete m_scene;
 	m_scene = nullptr;
+
+	//音の解放
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->Finalize();
+
 }
 
 void Game::OnDeviceRestored()

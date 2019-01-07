@@ -53,6 +53,8 @@
     <ClInclude Include="Scene\ScenePlay\Dungeon.h" />
     <ClInclude Include="Scene\ScenePlay\Player.h" />
     <ClInclude Include="Utility\Utility.h" />
+    <ClInclude Include="Scene\SceneTitle.h" />
+    <ClInclude Include="Scene\SceneResult.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -72,6 +74,8 @@
     <ClCompile Include="Object\Obj3D.cpp" />
     <ClCompile Include="Scene\ScenePlay\Dungeon.cpp" />
     <ClCompile Include="Scene\ScenePlay\Player.cpp" />
+    <ClCompile Include="Scene\SceneTitle.cpp" />
+    <ClCompile Include="Scene\SceneResult.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

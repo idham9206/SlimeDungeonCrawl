@@ -14,8 +14,8 @@ enum Direction
 	DIR_UP,        // 前
 	DIR_LEFT,      // 左
 	DIR_DOWN,      // 後ろ
-	DIR_JUMP,
-	DIR_FALL
+	//DIR_JUMP,
+	//DIR_FALL
 };
 
 // 方向ベクトル -----------------------------------------------------
@@ -47,6 +47,7 @@ public:
 
 	//動き方
 	void Move();
+	void AMove();
 	Direction PMove(Direction nextMovingDirection);
 	void Climb();
 	void Fall();
@@ -66,6 +67,8 @@ private:
 	//プレイヤーのハンドル
 	std::unique_ptr<Obj2D> m_player;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture;
+
+	DirectX::Keyboard::KeyboardStateTracker tracker;
 
 	Direction m_movingDirection;
 	float m_speed;

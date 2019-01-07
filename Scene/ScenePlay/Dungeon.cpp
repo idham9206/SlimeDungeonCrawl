@@ -166,9 +166,13 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 			{
 				if (m_block[i][j][k] != nullptr)
 				{
-					if (k < 9)
+					if (m_data[i][j][k] != 0)
 					{
-						m_block[i][j][k]->Render(view, projection);
+						if (k < 9)
+						{
+							m_block[i][j][k]->Render(view, projection);
+
+						}
 
 					}
 				}
@@ -206,6 +210,38 @@ bool Dungeon::IsMovable(DirectX::SimpleMath::Vector3 position)
 		return false;
 	}
 
+}
+
+bool Dungeon::IsClimbing(DirectX::SimpleMath::Vector3 position)
+{
+	if (((m_data[(int)position.x + 1][(int)position.y][(int)position.z] != TILE_BLOCK1 &&
+		m_data[(int)position.x + 1][(int)position.y][(int)position.z] != TILE_BLOCK2)) ||
+		((m_data[(int)position.x - 1][(int)position.y][(int)position.z] != TILE_BLOCK1 &&
+			m_data[(int)position.x - 1][(int)position.y][(int)position.z] != TILE_BLOCK2)) ||
+			((m_data[(int)position.x][(int)position.y][(int)position.z + 1] != TILE_BLOCK1 &&
+				m_data[(int)position.x][(int)position.y][(int)position.z + 1] != TILE_BLOCK2)) ||
+				((m_data[(int)position.x][(int)position.y][(int)position.z - 1] != TILE_BLOCK1 &&
+					m_data[(int)position.x][(int)position.y][(int)position.z - 1] != TILE_BLOCK2)))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Dungeon::FallingDown(DirectX::SimpleMath::Vector3 position)
+{
+	if (m_data[(int)position.x][(int)position.y - 1][(int)position.z] != TILE_NONE)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+
+	}
 }
 
 bool Dungeon::IsGoal(DirectX::SimpleMath::Vector3 position)

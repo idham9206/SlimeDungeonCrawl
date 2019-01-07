@@ -1,5 +1,6 @@
 #include "..\pch.h"
 #include "ScenePlay.h"
+#include "SceneResult.h"
 
 #include "..\\Utility\\ADX2\ADX2Le.h"
 
@@ -9,7 +10,9 @@ using namespace DirectX::SimpleMath;
 using namespace MyLibrary;
 
 ScenePlay::ScenePlay()
-	: /*m_effectManager(nullptr),*/ m_dungeon(nullptr), m_gameTimer(nullptr)
+	: /*m_effectManager(nullptr),*/ m_dungeon(nullptr), m_gameTimer(nullptr),
+	m_clearState(false),
+	m_gameTimerCD(10.0f)
 
 {
 }
@@ -42,7 +45,6 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 	//ゲームタイマーの制作
 	m_gameTimer = new Number(Vector2(420.0f, 10.0f), Vector2(2.0f, 2.0f));
-	m_gameTimerCD = 100;
 	m_gameTimer->Initialize();
 
 	m_gameTimer->Create(m_deviceResources, L"Resources\\Textures\\Number.png");
@@ -59,13 +61,16 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 	// スプライトバッチの作成
 	m_spritesShadow = std::make_unique<SpriteBatch>(context);
+	m_spriteGoal = std::make_unique<SpriteBatch>(context);
+
 
 	// テクスチャのロード
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\shadowbg1.png", nullptr, m_textureShadow.GetAddressOf());
+	//
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\GameClear.png", nullptr, m_textureGoal.GetAddressOf());
 
 	//音楽のロード
 	ADX2Le* adx2le = ADX2Le::GetInstance();
-	adx2le->Initialize(L"BGMTest.acf");
 	adx2le->LoadAcb(L"CueSheet_0.acb", L"CueSheet_0.awb");
 	adx2le->Play(0);
 
@@ -93,13 +98,27 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 	//プレイヤーの更新
 	m_player->Update(time);
 
+	if (m_dungeon->IsGoal(m_player->GetPosition()))
+	{
+		m_clearState = true;
+	}
+
+
 	//音更新
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Update();
 
 	//m_effectManager->Update(time);
 
-	return nullptr;
+	if (m_gameTimerCD < 0)
+	{
+		return new SceneResult();
+
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 void ScenePlay::Render()
@@ -126,10 +145,21 @@ void ScenePlay::Render()
 	m_spritesShadow->Draw(m_textureShadow.Get(), Vector2::Zero);
 	m_spritesShadow->End();
 
+
+	// スプライトの描画
+	m_spriteGoal->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
+	if (m_clearState)
+	{
+		m_spriteGoal->Draw(m_textureGoal.Get(), Vector2(50.0f, 30.0f));
+	}
+	m_spriteGoal->End();
+
 	//タイマー描画
 	m_gameTimer->Draw();
 
 	//m_effectManager->Render();
+
+
 
 
 }
@@ -141,6 +171,8 @@ void ScenePlay::Reset()
 	m_sprites = nullptr;
 	m_spritesShadow.reset();
 	m_spritesShadow = nullptr;
+	m_spriteGoal.reset();
+	m_spriteGoal = nullptr;
 
 	//プレイヤーの解放
 	m_player.reset();
@@ -163,7 +195,7 @@ void ScenePlay::Reset()
 
 	//音の解放
 	ADX2Le* adx2le = ADX2Le::GetInstance();
-	adx2le->Finalize();
+	adx2le->Stop();
 
 
 }

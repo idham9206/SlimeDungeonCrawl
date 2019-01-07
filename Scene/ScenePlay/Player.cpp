@@ -72,13 +72,17 @@ void Player::Move()
 
 	//プレイヤーの位置取得
 	Vector3 position = m_player->GetPosition();
-
+	int iPosBuffX = (int)position.x;
+	int iPosBuffY = (int)position.y;
+	int iPosBuffZ = (int)position.z;
+	Vector3 fPosBuff = Vector3((float)iPosBuffX, (float)iPosBuffY, (float)iPosBuffZ);
 
 	Direction nextMovingDirection = DIR_NONE;
-	static int countDown = 10;
+	static int countdown = 10;
 
-	countDown--;
-
+	static float wasPosition = position.y;
+	countdown--;
+	
 	if (kb.Up)
 	{
 		nextMovingDirection = DIR_UP;
@@ -96,11 +100,145 @@ void Player::Move()
 		nextMovingDirection = DIR_LEFT;
 	}
 
-
 	if (nextMovingDirection != DIR_NONE)
 	{
 		m_movingDirection = PMove(nextMovingDirection);
-		nextMovingDirection = DIR_NONE;
+		if (countdown < 0)
+		{
+			//m_player->SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
+			//wasPosition = position.y;
+			//countdown = 10;
+		}
+	}
+
+	if (m_dungeon->IsMovable(Vector3((iPosBuffX), (iPosBuffY - 1.0f), (iPosBuffY))))
+	{
+		if (m_dungeon->IsMovable(position))
+		{
+			//position.y--;
+			//m_player->SetPosition(Vector3(position.x, position.y - 0.1f, position.z));
+			//countdown = 10;
+
+		}
+
+	}
+
+	AMove();
+
+}
+
+void Player::AMove()
+{
+	auto kb = Keyboard::Get().GetState();
+	Vector3 position = m_player->GetPosition();
+
+	static int countdown = 10;
+
+	countdown--;
+
+	if (countdown < 0)
+	{
+		if (kb.Up)
+		{
+			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))))
+			{
+				//position.z--;
+				//m_player->SetPosition(position);
+
+			}
+			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))) &&
+				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z - 1.0f))))
+			{
+				{
+					//position.z--;
+					//position.y++;
+					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z - 1.0f));
+					countdown = 10;
+				}
+			}
+		}
+		else if (kb.Down)
+		{
+			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))))
+			{
+				//position.z++;
+				//m_player->SetPosition(position);
+
+
+			}
+			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))) &&
+				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z + 1.0f))))
+			{
+				{
+					//position.z++;
+					//position.y++;
+					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z + 1.0f));
+					countdown = 10;
+
+				}
+			}
+
+
+		}
+		else if (kb.Right)
+		{
+			if (m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))))
+			{
+				//position.x++;
+				//m_player->SetPosition(position);
+
+			}
+			else if (!m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))) &&
+				m_dungeon->IsMovable(Vector3((position.x + 1.0f), (position.y + 1.0f), (position.z))))
+			{
+				{
+					//position.x++;
+					//position.y++;
+					m_player->SetPosition(Vector3(position.x + 1.0f, position.y + 1.0f, position.z));
+					countdown = 10;
+
+				}
+			}
+
+		}
+		else if (kb.Left)
+		{
+
+			if (m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))))
+			{
+				//position.x--;
+				//m_player->SetPosition(position);
+
+
+			}
+			else if (!m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))) &&
+				m_dungeon->IsMovable(Vector3((position.x - 1.0f), (position.y + 1.0f), (position.z))))
+			{
+				{
+					//position.x--;
+					//position.y++;
+					m_player->SetPosition(Vector3(position.x - 1.0f, position.y + 1.0f, position.z));
+					countdown = 10;
+
+				}
+			}
+
+
+		}
+
+
+		if (m_dungeon->IsMovable(Vector3((position.x), (position.y - 1.0f), (position.z))))
+		{
+			if (m_dungeon->IsMovable(Vector3((position.x), (position.y), (position.z))))
+			{
+				//position.y--;
+				m_player->SetPosition(Vector3(position.x, position.y - 1.0f, position.z));
+				countdown = 10;
+
+			}
+
+		}
+
 	}
 
 }
@@ -134,39 +272,26 @@ Direction Player::PMove(Direction nextDirection)
 		if (distance < m_speed)    // このフレームで中心にたどり着ける場合
 		{
 			Vector3 nextMovingDirectionVector = DIRECTION_VECTOR[nextDirection]; // 次回の移動方向ベクトルの算出
-			Vector3 destination = m_player->GetPosition() + nextMovingDirectionVector;   // 目的地
+			Vector3 destination = fPosBuff + nextMovingDirectionVector;   // 目的地
 
 			if (m_dungeon->IsMovable(destination)) // 移動可能の場合
 			{
 				velocity = differenceVector;
 				speed -= distance;
-				//velocity += Vector3(0.0f, 1.0f, 0.0f);
 				velocity += nextMovingDirectionVector * speed;
 			}
 			else    // 移動不可能の場合
 			{
 
 				nextDirection = m_movingDirection;    // 指定の方向を現在の進行方向に変更
+
 			}
+
 
 
 		}
 		else    // このフレームで中心にたどり着けない場合
 		{
-			//Vector3 nextMovingDirectionVector = DIRECTION_VECTOR[nextDirection]; // 次回の移動方向ベクトルの算出
-			//Vector3 destination = m_player->GetPosition() + nextMovingDirectionVector;   // 目的地
-
-			//if (!m_dungeon->IsMovable(destination)) // 移動不可能の場合
-			//{
-			//	if (m_dungeon->IsMovable(Vector3(destination.x, destination.y + 1.0f, destination.z)))
-			//	{
-			//		velocity = differenceVector;
-			//		speed -= distance;
-			//		velocity += Vector3(0.0f, 1.0f, 0.0f);
-			//	}
-
-			//}
-
 
 			nextDirection = m_movingDirection;    // 指定の方向を現在の進行方向に変更
 		}
@@ -182,7 +307,10 @@ Direction Player::PMove(Direction nextDirection)
 		Vector3 nextPosition = m_player->GetPosition() + velocity;    // 移動予定の位置
 
 		Vector3 destination = fPosBuff + nextMovingDirectionVector;   // 目的地
-		Vector3 destinationCenter = destination;                      // 目的地の中心座標
+		int iDesBuffX = (int)destination.x;
+		int iDesBuffY = (int)destination.y;
+		int iDesBuffZ = (int)destination.z;
+		Vector3 destinationCenter = Vector3((float)iDesBuffX, (float)iDesBuffY, (float)iDesBuffZ);                      // 目的地の中心座標
 
 		Vector3 differenceVector = destinationCenter - nextPosition;   // 目的地の中心座標と移動予定の位置の差分ベクトル
 		float   distance = differenceVector.Length();          // 目的地の中心座標と移動予定の位置との距離
@@ -192,44 +320,30 @@ Direction Player::PMove(Direction nextDirection)
 			if (!m_dungeon->IsMovable(destination))
 			{
 				velocity = center - m_player->GetPosition();
-
-				//if (m_dungeon->IsMovable(Vector3(destination.x, destination.y + 1.0f, destination.z)))
-				//{
-				//	velocity = differenceVector;
-				//	speed -= distance;
-				//	velocity += Vector3(0.0f, 1.0f, 0.0f);
-				//}
-
 			}
 		}
 	}
 
-	{
-		Vector3 nextMovingDirectionVector = DIRECTION_VECTOR[nextDirection]; // 次回の移動方向ベクトルの算出
-		Vector3 destination = m_player->GetPosition() + nextMovingDirectionVector;   // 目的地
+	//{
+	//	Vector3 nextMovingDirectionVector = DIRECTION_VECTOR[nextDirection];    // 方向ベクトルの算出
+	//	velocity = nextMovingDirectionVector * speed;
+	//	Vector3 destination = fPosBuff + nextMovingDirectionVector;   // 目的地
+	//	if (!m_dungeon->IsMovable(destination)) // 移動不可能の場合
+	//	{
+	//		if (m_dungeon->IsMovable(Vector3(destination.x, destination.y + 1.0f, destination.z)))
+	//		{
+	//			velocity = (Vector3(0.0f, 1.0f, 0.0f) + (center - m_player->GetPosition()));
+	//		}
 
-		Vector3 differenceVector = center - m_player->GetPosition();          // 中心座標と現在位置の差分ベクトル
-		float distance = differenceVector.Length();    // 中心座標と現在位置との距離
-		if (!m_dungeon->IsMovable(destination)) // 移動不可能の場合
-		{
-			if (m_dungeon->IsMovable(Vector3(destination.x, destination.y + 1.0f, destination.z)))
-			{
-				velocity = differenceVector;
-				speed -= distance;
-				velocity += Vector3(0.0f, 1.0f, 0.0f);
-			}
-			if (m_dungeon->IsMovable(Vector3(destination.x, destination.y - 1.0f, destination.z)))
-			{
-				velocity = differenceVector;
-				speed -= distance;
-				velocity += Vector3(0.0f, -1.0f, 0.0f);
-			}
+	//	}
 
-		}
+	//	if (m_dungeon->IsMovable(Vector3(destination.x, destination.y - 1.0f, destination.z)))
+	//	{
+	//		velocity = Vector3(0.0f, -1.0f, 0.0f);
+	//	}
 
 
-
-	}
+	//}
 	
 	// 移動処理 ------------------------------------
 	m_player->SetPosition(m_player->GetPosition() + velocity); // 速度分の移動

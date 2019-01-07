@@ -23,11 +23,16 @@ public:
 
 public:
 	bool LoadData(const wchar_t* filename);
+	// ƒf[ƒ^‚Ì“Ç‚İ‚İŠÖ”
 	void Feed();
 
 	int*** GetData()
 	{
 		return m_data;
+	}
+	void SetData(int*** data)
+	{
+		m_data = data;
 	}
 	int GetWidth()
 	{
