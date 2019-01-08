@@ -8,7 +8,8 @@ using namespace DirectX::SimpleMath;
 
 Player::Player():
 	m_dungeon(nullptr), m_deviceResources(nullptr),
-	m_movingDirection(DIR_NONE), m_speed(0.1f)
+	m_movingDirection(DIR_NONE), m_charaState(NONE), m_speed(0.1f),
+	m_isDead(false), m_isMove(false), m_isFront(true)
 {
 }
 
@@ -33,20 +34,95 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
 	//オブジェクト2D情報取得する
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\charatest(frontmove).png", nullptr, m_playerTexture.GetAddressOf());
+	//============================================================================================================================
+	//アイドル
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_idle(front).png", nullptr, m_playerTexture[0].GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_idle(back).png", nullptr, m_playerTexture[1].GetAddressOf());
+	//動く
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_move(front).png", nullptr, m_playerTexture[2].GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_move(back).png", nullptr, m_playerTexture[3].GetAddressOf());
+	//攻撃された
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_hit(front).png", nullptr, m_playerTexture[4].GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_hit(back).png", nullptr, m_playerTexture[5].GetAddressOf());
+	//============================================================================================================================
 	m_player = std::make_unique<Obj2D>();
 	m_player->SetPosition(Vector3(5.0f, 1.0f, 5.0f));
-	m_player->Initialize(m_deviceResources, states, 8);
-	m_player->SetTexture(m_playerTexture.Get());
+	m_player->Initialize(m_deviceResources, states, 4);
+	m_player->SetTexture(m_playerTexture[0].Get());
 
 }
 
+// 更新処理	
 void Player::Update(float elapsedTime)
 {
 
 	//オブジェクト2Dの更新
 	m_player->Update(elapsedTime);
+	//Direction wasDirection = m_movingDirection;
+	bool wasMove = m_isMove;
+	bool wasDead = m_isDead;
 	Move();
+	switch (m_charaState)
+	{
+	case IDLE_FRONT:
+		if (wasMove != m_isMove)
+		{
+			m_player->SetTexture(m_playerTexture[0].Get());
+			m_player->SetFrameCount(4);
+			m_player->ResetFrame();
+		}
+		break;
+	case IDLE_BACK:
+		if (wasMove != m_isMove)
+		{
+			m_player->SetTexture(m_playerTexture[1].Get());
+			m_player->SetFrameCount(4);
+			m_player->ResetFrame();
+		}
+		break;
+	case MOVE_FRONT:
+		if (wasMove != m_isMove)
+		{
+			m_player->SetTexture(m_playerTexture[2].Get());
+			m_player->SetFrameCount(8);
+			m_player->ResetFrame();
+		}
+		break;
+	case MOVE_BACK:
+		if (wasMove != m_isMove)
+		{
+			m_player->SetTexture(m_playerTexture[3].Get());
+			m_player->SetFrameCount(8);
+			m_player->ResetFrame();
+		}
+		break;
+	case HIT_FRONT:
+		if (wasDead != m_isDead)
+		{
+			m_player->SetTexture(m_playerTexture[4].Get());
+			m_player->SetFrameCount(4);
+			m_player->ResetFrame();
+		}
+
+		break;
+	case HIT_BACK:
+		if (wasDead != m_isDead)
+		{
+			m_player->SetTexture(m_playerTexture[5].Get());
+			m_player->SetFrameCount(4);
+			m_player->ResetFrame();
+		}
+		break;
+	default:
+		if (wasMove != m_isMove)
+		{
+			m_player->SetTexture(m_playerTexture[0].Get());
+			m_player->SetFrameCount(4);
+			m_player->ResetFrame();
+		}
+		break;
+	}
+
 }
 
 void Player::Render(Vector3 eye, Matrix view, Matrix projection)
@@ -79,51 +155,97 @@ void Player::Move()
 
 	Direction nextMovingDirection = DIR_NONE;
 	static int countdown = 10;
-
 	static float wasPosition = position.y;
 	countdown--;
-	
+
+	m_isMove = false;
 	if (kb.Up)
 	{
 		nextMovingDirection = DIR_UP;
+		m_isMove = true;
+		m_isFront = false;
 	}
 	else if (kb.Down)
 	{
 		nextMovingDirection = DIR_DOWN;
+		m_isMove = true;
+		m_isFront = true;
 	}
 	else if (kb.Right)
 	{
 		nextMovingDirection = DIR_RIGHT;
+		m_isMove = true;
+		m_isFront = false;
 	}
 	else if (kb.Left)
 	{
 		nextMovingDirection = DIR_LEFT;
+		m_isMove = true;
+		m_isFront = true;
 	}
 
 	if (nextMovingDirection != DIR_NONE)
 	{
 		m_movingDirection = PMove(nextMovingDirection);
-		if (countdown < 0)
-		{
-			//m_player->SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
-			//wasPosition = position.y;
-			//countdown = 10;
-		}
+
+
+		//if (countdown < 0)
+		//{
+		//	//m_player->SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
+		//	//wasPosition = position.y;
+		//	//countdown = 10;
+		//}
 	}
 
-	if (m_dungeon->IsMovable(Vector3((iPosBuffX), (iPosBuffY - 1.0f), (iPosBuffY))))
-	{
-		if (m_dungeon->IsMovable(position))
-		{
-			//position.y--;
-			//m_player->SetPosition(Vector3(position.x, position.y - 0.1f, position.z));
-			//countdown = 10;
+	//if (m_dungeon->IsMovable(Vector3((iPosBuffX), (iPosBuffY - 1.0f), (iPosBuffY))))
+	//{
+	//	if (m_dungeon->IsMovable(position))
+	//	{
+	//		//position.y--;
+	//		//m_player->SetPosition(Vector3(position.x, position.y - 0.1f, position.z));
+	//		//countdown = 10;
 
-		}
+	//	}
 
-	}
+	//}
 
 	AMove();
+	if (m_isFront)
+	{
+		m_charaState = IDLE_FRONT;
+		if (m_isMove)
+		{
+			m_charaState = MOVE_FRONT;
+		}
+		else
+		{
+			m_charaState = IDLE_FRONT;
+		}
+	}
+	else if (!m_isFront)
+	{
+		m_charaState = IDLE_BACK;
+		if (m_isMove)
+		{
+			m_charaState = MOVE_BACK;
+		}
+		else
+		{
+			m_charaState = IDLE_BACK;
+		}
+	}
+
+
+	if (kb.A)
+	{
+		m_isDead = true;
+	}
+
+	if (m_isDead)
+	{
+		m_charaState = HIT_FRONT;
+		m_player->SetFrameLoop(false);
+	}
 
 }
 

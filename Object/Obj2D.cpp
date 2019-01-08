@@ -6,7 +6,8 @@ using namespace DirectX::SimpleMath;
 
 
 Obj2D::Obj2D():
-	m_scale(Vector2(1.0f, 1.0f))
+	m_scale(Vector2(1.0f, 1.0f)),
+	m_frameTimeResetter(30.0f)
 {
 }
 
@@ -30,7 +31,7 @@ void Obj2D::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSta
 	m_spriteFrame.y = 0.0f;
 	m_spriteFrame.w = (float)1 / m_frameCountX;
 	m_spriteFrame.z = (float)1 / m_frameCountY;
-	m_frametime = 10.0f;
+	m_frametime = m_frameTimeResetter;
 
 	m_speed = 2.0f;
 	m_count = 10;
@@ -44,11 +45,34 @@ void Obj2D::Update(float elapsedTime)
 	{
 		m_spriteFrame.x += (float)1 / m_frameCountX;
 		m_spriteFrame.w += (float)1 / m_frameCountX;
-		m_frametime = 10.0f;
+		m_frametime = m_frameTimeResetter;
 	}
 
-	static float x = 0;
-	x ++;
+	if (m_loop)
+	{
+		if (m_spriteFrame.x > 1.0f - ((float)1 / m_frameCountX))
+		{
+			m_spriteFrame.x = 0.0f;
+		}
+		if (m_spriteFrame.w > 1.0f)
+		{
+			m_spriteFrame.w = (float)1 / m_frameCountX;
+		}
+
+	}
+	else
+	{
+		if (m_spriteFrame.x > 1.0f - ((float)1 / m_frameCountX))
+		{
+			m_spriteFrame.x = 1.0f - ((float)1 / m_frameCountX);
+		}
+		if (m_spriteFrame.w > 1.0f)
+		{
+			m_spriteFrame.w = 1.0f;
+		}
+
+	}
+
 	if (m_spriteFrame.x > 1.0f - ((float)1 / m_frameCountX))
 	{
 		m_spriteFrame.x = 0.0f;
@@ -72,6 +96,20 @@ void Obj2D::Render(Vector3 cameraEye, DirectX::SimpleMath::Matrix view,
 
 	DrawSprite3D(world, view, projection, m_spriteFrame);
 
+}
+
+void Obj2D::SetFrameCount(int x, int y)
+{
+	m_frameCountX = x;
+	m_frameCountY = y;
+}
+
+void Obj2D::ResetFrame()
+{
+	m_spriteFrame.x = 0.0f;
+	m_spriteFrame.y = 0.0f;
+	m_spriteFrame.w = (float)1 / m_frameCountX;
+	m_spriteFrame.z = (float)1 / m_frameCountY;
 }
 
 void Obj2D::Create(DX::DeviceResources * deviceResources, DirectX::CommonStates* states)

@@ -48,11 +48,11 @@ void Game::Initialize(HWND window, int width, int height)
 
     m_deviceResources->CreateWindowSizeDependentResources();
     CreateWindowSizeDependentResources();
-
-	m_scene->Initialize(m_deviceResources.get(), m_states.get());
 	//音楽の初期化
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Initialize(L"BGMTest.acf");
+	//シーンの初期化
+	m_scene->Initialize(m_deviceResources.get(), m_states.get());
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -86,18 +86,22 @@ void Game::Update(DX::StepTimer const& timer)
 	// デバッグカメラの更新
 	//m_debugCamera->Update();
 
+	//シーンの更新
 	m_scene->Update(elapsedTime);
 
 	{	
+		//次のシーンを用意する
 		SceneBase* next = nullptr;
-
 		next = m_scene->Update(elapsedTime);
 
 		if (next != nullptr)
 		{
+			//今シーンの解放
 			m_scene->Reset();
 			delete m_scene;
+			//用意されたシーンをコピーする
 			m_scene = next;
+			//シーンの再初期化
 			m_scene->Initialize(m_deviceResources.get(), m_states.get());
 		}
 	}
@@ -131,6 +135,8 @@ void Game::Render()
 	//m_gridFloor->Render(context, m_view, m_projection);
 
 	// ここから描画処理を記述する
+
+	//シーンの描画
 	m_scene->SetWorld(m_world);
 	m_scene->SetView(m_view);
 	m_scene->SetProjection(m_projection);
@@ -282,6 +288,7 @@ void Game::OnDeviceLost()
 	// グリッドの床の解放
 	//m_gridFloor.reset();
 
+	//シーンの最後の解放
 	m_scene->Reset();
 	delete m_scene;
 	m_scene = nullptr;

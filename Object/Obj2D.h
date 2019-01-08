@@ -12,6 +12,8 @@
 class Obj2D
 {
 private:
+
+
 	// ˆÊ’u
 	DirectX::SimpleMath::Vector3 m_position;
 
@@ -30,9 +32,12 @@ private:
 	int m_count;
 
 	float m_frametime;
+	float m_frameTimeResetter; 	//”š‚ÌÅ‘åŒÀ
 
 	int m_frameCountX;
 	int m_frameCountY;
+
+	bool m_loop;
 
 	std::unique_ptr<DirectX::AlphaTestEffect> m_batchEffect;
 	
@@ -69,8 +74,18 @@ public:
 		const DirectX::SimpleMath::Matrix& projection);
 
 
-
+	//
 	void SetTexture(ID3D11ShaderResourceView* texture) { m_texture = texture; }
+
+	//
+	void SetFrameCount(int x, int y = 1);
+	//
+	void ResetFrame();
+	//
+	void SetFrameResetter(float resetNumber) { m_frameTimeResetter = resetNumber; }
+	//
+	void SetFrameLoop(bool loop) { m_loop = loop; }
+
 	// ˆÊ’u‚ğİ’è‚·‚éŠÖ”
 	void SetPosition(DirectX::SimpleMath::Vector3 position) { m_position = position; }
 

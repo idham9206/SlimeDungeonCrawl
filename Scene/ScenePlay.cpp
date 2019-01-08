@@ -46,7 +46,6 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	//ゲームタイマーの制作
 	m_gameTimer = new Number(Vector2(420.0f, 10.0f), Vector2(2.0f, 2.0f));
 	m_gameTimer->Initialize();
-
 	m_gameTimer->Create(m_deviceResources, L"Resources\\Textures\\Number.png");
 
 
@@ -110,15 +109,17 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 
 	//m_effectManager->Update(time);
 
-	if (m_gameTimerCD < 0)
-	{
-		return new SceneResult();
+	//if (m_gameTimerCD < 0)
+	//{
+	//	return new SceneResult();
 
-	}
-	else
-	{
-		return nullptr;
-	}
+	//}
+	//else
+	//{
+	//	return nullptr;
+	//}
+
+	return nullptr;
 }
 
 void ScenePlay::Render()

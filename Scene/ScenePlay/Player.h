@@ -17,7 +17,16 @@ enum Direction
 	//DIR_JUMP,
 	//DIR_FALL
 };
-
+enum State
+{
+	NONE,
+	IDLE_FRONT,
+	IDLE_BACK,
+	MOVE_FRONT,
+	MOVE_BACK,
+	HIT_FRONT,
+	HIT_BACK
+};
 // 方向ベクトル -----------------------------------------------------
 static const DirectX::SimpleMath::Vector3 DIRECTION_VECTOR[] =
 {
@@ -56,6 +65,7 @@ public:
 	DirectX::SimpleMath::Vector3 GetPosition() { return m_player->GetPosition(); }
 	void SetPosition(DirectX::SimpleMath::Vector3 position) { m_player->SetPosition(position); }
 	void SetDungeon(Dungeon* dungeon) { m_dungeon = dungeon; }
+	bool GetCharaState() { return m_isDead; }
 
 private:
 	//デバイスリソーシズへのポインター
@@ -66,12 +76,18 @@ private:
 
 	//プレイヤーのハンドル
 	std::unique_ptr<Obj2D> m_player;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture[6];
 
 	DirectX::Keyboard::KeyboardStateTracker tracker;
 
 	Direction m_movingDirection;
+	State m_charaState;
+
 	float m_speed;
+
+	bool m_isDead;
+	bool m_isMove;
+	bool m_isFront;
 
 };
 
