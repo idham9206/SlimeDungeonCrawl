@@ -7,6 +7,8 @@
 #include "SceneBase.h"
 
 #include "..\Utility\Number.h"
+#include "..\Utility\Blink.h"
+
 #include "..\Object\Obj2D.h"
 #include "..\Object\Obj3D.h"
 
@@ -29,15 +31,17 @@ public:
 private:
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
+	std::unique_ptr<DirectX::SpriteBatch> m_spritesStart;
 
 
 	// ブラックアウトエフェクトスプライトバッチ
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTitle;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureStart;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureBoard;
 
 	//キーボードの押したらの情報ハンドル
 	DirectX::Keyboard::KeyboardStateTracker m_tracker;
 
-	float m_countdown;
-
-
+	//点滅フラグ
+	Blink* m_blink;
 };

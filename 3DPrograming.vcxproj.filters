@@ -55,6 +55,7 @@
     <ClInclude Include="Utility\Utility.h" />
     <ClInclude Include="Scene\SceneTitle.h" />
     <ClInclude Include="Scene\SceneResult.h" />
+    <ClInclude Include="Utility\Blink.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -76,6 +77,7 @@
     <ClCompile Include="Scene\ScenePlay\Player.cpp" />
     <ClCompile Include="Scene\SceneTitle.cpp" />
     <ClCompile Include="Scene\SceneResult.cpp" />
+    <ClCompile Include="Utility\Blink.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

@@ -1,6 +1,7 @@
 #include "..\pch.h"
 #include "ScenePlay.h"
 #include "SceneResult.h"
+#include "SceneTitle.h"
 
 #include "..\\Utility\\ADX2\ADX2Le.h"
 
@@ -11,9 +12,9 @@ using namespace MyLibrary;
 
 ScenePlay::ScenePlay()
 	: /*m_effectManager(nullptr),*/ m_dungeon(nullptr), m_gameTimer(nullptr),
-	m_clearState(false),
-	m_gameTimerCD(10.0f)
-
+	m_clearState(false), m_startState(false), m_gameOverState(false),
+	m_gameTimerCD(100.0f), m_startCD(5.0f),
+	m_positionOver(Vector2(55.0f, -350.0f))
 {
 }
 
@@ -42,9 +43,10 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
+	m_spritesShadow = std::make_unique<SpriteBatch>(context);
 
 	//ゲームタイマーの制作
-	m_gameTimer = new Number(Vector2(420.0f, 10.0f), Vector2(2.0f, 2.0f));
+	m_gameTimer = new Number(Vector2(50.0f, 30.0f), Vector2(2.0f, 2.0f));
 	m_gameTimer->Initialize();
 	m_gameTimer->Create(m_deviceResources, L"Resources\\Textures\\Number.png");
 
@@ -58,15 +60,12 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	m_player->Initialize(m_deviceResources, m_states);
 	m_player->SetDungeon(m_dungeon);
 
-	// スプライトバッチの作成
-	m_spritesShadow = std::make_unique<SpriteBatch>(context);
-	m_spriteGoal = std::make_unique<SpriteBatch>(context);
-
 
 	// テクスチャのロード
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\shadowbg1.png", nullptr, m_textureShadow.GetAddressOf());
-	//
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\GameClear.png", nullptr, m_textureGoal.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\GameOver.png", nullptr, m_textureGameOver.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\GameTNTUI.png", nullptr, m_textureTNTUI.GetAddressOf());
 
 	//音楽のロード
 	ADX2Le* adx2le = ADX2Le::GetInstance();
@@ -84,40 +83,93 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 SceneBase * ScenePlay::Update(float elapsedTime)
 {
+	float timer = elapsedTime;
+	auto kb = Keyboard::Get().GetState();
+	m_tracker.Update(kb);
 
-	//ゲームタイマー
-	float time = elapsedTime;
-	m_gameTimerCD -= time;
-	m_gameTimer->Update();
-	m_gameTimer->SetNumber((int)m_gameTimerCD);
-
-	//ダンジョンの更新
-	m_dungeon->Update(time);
-
-	//プレイヤーの更新
-	m_player->Update(time);
-
-	if (m_dungeon->IsGoal(m_player->GetPosition()))
+	m_startCD -= timer;
+	if (m_startCD < 0)
 	{
-		m_clearState = true;
+		m_startState = true;
 	}
 
+	if (m_startState)
+	{
+		if (!m_clearState &&
+			!m_gameOverState)
+		{
+			//ゲームタイマー
+			float timer = elapsedTime;
+			m_gameTimerCD -= timer;
+			m_gameTimer->Update();
+			m_gameTimer->SetNumber((int)m_gameTimerCD);
 
-	//音更新
-	ADX2Le* adx2le = ADX2Le::GetInstance();
-	adx2le->Update();
+			//ダンジョンの更新
+			m_dungeon->Update(timer);
 
-	//m_effectManager->Update(time);
+			//プレイヤーの更新
+			m_player->Update(timer);
 
-	//if (m_gameTimerCD < 0)
-	//{
-	//	return new SceneResult();
+			if (m_player->GetCharaState())
+			{
+				float timer = elapsedTime;
+				static float deadCD = 2;
+				deadCD -= timer;
 
-	//}
-	//else
-	//{
-	//	return nullptr;
-	//}
+				if (deadCD < 0)
+				{
+					m_gameOverState = true;
+				}
+			}
+
+			if (m_dungeon->IsGoal(m_player->GetPosition()))
+			{
+				m_clearState = true;
+			}
+
+			if (m_gameTimerCD < 0)
+			{
+				if (!m_player->GetCharaState())
+				{
+					m_player->SetGameOverState();
+				}
+
+				float timer = elapsedTime;
+				static float deadCD = 2;
+				deadCD -= timer;
+
+				if (deadCD < 0)
+				{
+					m_gameOverState = true;
+				}
+			}
+
+			//音更新
+			ADX2Le* adx2le = ADX2Le::GetInstance();
+			adx2le->Update();
+		}
+
+
+	}
+
+	if (m_gameOverState ||
+		m_clearState)
+	{
+		if (m_positionOver.y < 50.0f)
+		{
+			m_positionOver.y++;
+		}
+		if (kb.Space)
+		{
+			return new SceneTitle();
+		}
+		else
+		{
+			return nullptr;
+
+		}
+
+	}
 
 	return nullptr;
 }
@@ -148,21 +200,20 @@ void ScenePlay::Render()
 
 
 	// スプライトの描画
-	m_spriteGoal->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
+	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
+	m_sprites->Draw(m_textureTNTUI.Get(), Vector2(40.0f, 10.0f));
 	if (m_clearState)
 	{
-		m_spriteGoal->Draw(m_textureGoal.Get(), Vector2(50.0f, 30.0f));
+		m_sprites->Draw(m_textureGoal.Get(), m_positionOver);
 	}
-	m_spriteGoal->End();
+	if (m_gameOverState)
+	{
+		m_sprites->Draw(m_textureGameOver.Get(), m_positionOver);
+	}
+	m_sprites->End();
 
 	//タイマー描画
 	m_gameTimer->Draw();
-
-	//m_effectManager->Render();
-
-
-
-
 }
 
 void ScenePlay::Reset()
@@ -172,8 +223,6 @@ void ScenePlay::Reset()
 	m_sprites = nullptr;
 	m_spritesShadow.reset();
 	m_spritesShadow = nullptr;
-	m_spriteGoal.reset();
-	m_spriteGoal = nullptr;
 
 	//プレイヤーの解放
 	m_player.reset();

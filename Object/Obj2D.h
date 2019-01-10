@@ -39,6 +39,8 @@ private:
 
 	bool m_loop;
 
+	float m_degreesY;
+
 	std::unique_ptr<DirectX::AlphaTestEffect> m_batchEffect;
 	
 	// テクスチャハンドル
@@ -85,6 +87,8 @@ public:
 	void SetFrameResetter(float resetNumber) { m_frameTimeResetter = resetNumber; }
 	//
 	void SetFrameLoop(bool loop) { m_loop = loop; }
+	//
+	void SetRotationY(float degreeY) { m_degreesY = degreeY; }
 
 	// 位置を設定する関数
 	void SetPosition(DirectX::SimpleMath::Vector3 position) { m_position = position; }

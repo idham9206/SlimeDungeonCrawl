@@ -9,7 +9,7 @@ using namespace DirectX::SimpleMath;
 Player::Player():
 	m_dungeon(nullptr), m_deviceResources(nullptr),
 	m_movingDirection(DIR_NONE), m_charaState(NONE), m_speed(0.1f),
-	m_isDead(false), m_isMove(false), m_isFront(true)
+	m_isDead(false), m_isMove(false), m_isFront(true), m_isOver(false)
 {
 }
 
@@ -52,16 +52,37 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 
 }
 
-// 更新処理	
+// 更新処理
 void Player::Update(float elapsedTime)
 {
-
+	bool wasMove = m_isMove;
+	bool wasDead = m_isDead;
 	//オブジェクト2Dの更新
 	m_player->Update(elapsedTime);
 	//Direction wasDirection = m_movingDirection;
-	bool wasMove = m_isMove;
-	bool wasDead = m_isDead;
-	Move();
+	if (!m_isDead)
+	{
+		Move();
+	}
+
+	if (m_isOver)
+	{
+		m_isDead = m_isOver;
+	}
+
+	if (m_isDead)
+	{
+		if (m_isFront)
+		{
+			m_charaState = HIT_FRONT;
+		}
+		else if (!m_isFront)
+		{
+			m_charaState = HIT_BACK;
+		}
+	}
+
+
 	switch (m_charaState)
 	{
 	case IDLE_FRONT:
@@ -103,7 +124,6 @@ void Player::Update(float elapsedTime)
 			m_player->SetFrameCount(4);
 			m_player->ResetFrame();
 		}
-
 		break;
 	case HIT_BACK:
 		if (wasDead != m_isDead)
@@ -121,6 +141,10 @@ void Player::Update(float elapsedTime)
 			m_player->ResetFrame();
 		}
 		break;
+	}
+	if (m_isDead)
+	{
+		m_player->SetFrameLoop(false);
 	}
 
 }
@@ -235,17 +259,11 @@ void Player::Move()
 		}
 	}
 
-
 	if (kb.A)
 	{
 		m_isDead = true;
 	}
 
-	if (m_isDead)
-	{
-		m_charaState = HIT_FRONT;
-		m_player->SetFrameLoop(false);
-	}
 
 }
 

@@ -192,6 +192,7 @@
     <ClInclude Include="Scene\SceneTitle.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Utility\ADX2\ADX2Le.h" />
+    <ClInclude Include="Utility\Blink.h" />
     <ClInclude Include="Utility\DataLoad.h" />
     <ClInclude Include="Utility\Number.h" />
     <ClInclude Include="Utility\Utility.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="Scene\SceneResult.cpp" />
     <ClCompile Include="Scene\SceneTitle.cpp" />
     <ClCompile Include="Utility\ADX2\ADX2Le.cpp" />
+    <ClCompile Include="Utility\Blink.cpp" />
     <ClCompile Include="Utility\DataLoad.cpp" />
     <ClCompile Include="Utility\Number.cpp" />
   </ItemGroup>

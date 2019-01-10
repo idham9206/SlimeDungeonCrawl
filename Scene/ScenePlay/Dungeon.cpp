@@ -198,6 +198,19 @@ bool Dungeon::IDChecker(TileID tileID, DirectX::SimpleMath::Vector3 position)
 }
 ////=====================================================================================================////
 
+//bool Dungeon::IsMovable(DirectX::SimpleMath::Vector3 position)
+//{
+//	if (m_data[(int)position.x][(int)position.y][(int)position.z] != TILE_BLOCK1 &&
+//		m_data[(int)position.x][(int)position.y][(int)position.z] != TILE_BLOCK2)
+//	{
+//		return true;
+//	}
+//	else
+//	{
+//		return false;
+//	}
+//
+//}
 bool Dungeon::IsMovable(DirectX::SimpleMath::Vector3 position)
 {
 	if (m_data[(int)position.x][(int)position.y][(int)position.z] != TILE_BLOCK1 &&
@@ -211,6 +224,8 @@ bool Dungeon::IsMovable(DirectX::SimpleMath::Vector3 position)
 	}
 
 }
+
+
 
 bool Dungeon::IsClimbing(DirectX::SimpleMath::Vector3 position)
 {

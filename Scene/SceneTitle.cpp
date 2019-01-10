@@ -9,8 +9,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 using namespace MyLibrary;
 
-SceneTitle::SceneTitle():
-	m_countdown(10.0f)
+SceneTitle::SceneTitle()
 {
 }
 
@@ -39,16 +38,25 @@ void SceneTitle::Initialize(DX::DeviceResources * deviceResources, DirectX::Comm
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
 	//
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\Title01.png", nullptr, m_texture.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleLogo.png", nullptr, m_textureTitle.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleStart.png", nullptr, m_textureStart.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleBoard.png", nullptr, m_textureBoard.GetAddressOf());
+
+	m_blink = new Blink();
+	m_blink->Initialize(70);
+
 }
 
 SceneBase * SceneTitle::Update(float elapsedTime)
 {
 	float time = elapsedTime;
-	m_countdown -= time;
 
+	auto kb = Keyboard::Get().GetState();
+	m_tracker.Update(kb);
 
-	if (m_countdown < 0)
+	m_blink->Update(time);
+
+	if (kb.Space)
 	{
 		return new ScenePlay();
 
@@ -64,9 +72,15 @@ void SceneTitle::Render()
 
 	m_deviceResources->PIXBeginEvent(L"Render");
 	auto context = m_deviceResources->GetD3DDeviceContext();
+
 	// スプライトの描画
 	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
-	m_sprites->Draw(m_texture.Get(), Vector2(35.0f, 30.0f));
+	m_sprites->Draw(m_textureBoard.Get(), Vector2(35.0f, -5.0f));
+	m_sprites->Draw(m_textureTitle.Get(), Vector2(35.0f, 30.0f));
+	if (m_blink->GetState())
+	{
+		m_sprites->Draw(m_textureStart.Get(), Vector2(160.0f, 416.0f));
+	}
 	m_sprites->End();
 
 

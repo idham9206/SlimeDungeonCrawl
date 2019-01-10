@@ -7,7 +7,9 @@ using namespace DirectX::SimpleMath;
 
 Obj2D::Obj2D():
 	m_scale(Vector2(1.0f, 1.0f)),
-	m_frameTimeResetter(30.0f)
+	m_position(Vector2(1.0f, 1.0f)),
+	m_frameTimeResetter(30.0f),
+	m_degreesY(0)
 {
 }
 
@@ -88,8 +90,8 @@ void Obj2D::Render(Vector3 cameraEye, DirectX::SimpleMath::Matrix view,
 	const DirectX::SimpleMath::Matrix& projection)
 {
 	Matrix world;
-	world = Scale(m_scale.x, m_scale.y) * Matrix::CreateBillboard(
-		Vector3((float)this->m_position.x, (float) this->m_position.y, (float) this->m_position.z),
+	world = Scale(m_scale.x, m_scale.y)*
+		Matrix::CreateBillboard(Vector3((float)this->m_position.x, (float) this->m_position.y, (float) this->m_position.z),
 		cameraEye,
 		Vector3::Up
 	);

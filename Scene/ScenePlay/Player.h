@@ -65,6 +65,8 @@ public:
 	DirectX::SimpleMath::Vector3 GetPosition() { return m_player->GetPosition(); }
 	void SetPosition(DirectX::SimpleMath::Vector3 position) { m_player->SetPosition(position); }
 	void SetDungeon(Dungeon* dungeon) { m_dungeon = dungeon; }
+	void SetCharaDeadState() { m_isDead = true; }
+	void SetGameOverState() { m_isOver = true; }
 	bool GetCharaState() { return m_isDead; }
 
 private:
@@ -86,6 +88,7 @@ private:
 	float m_speed;
 
 	bool m_isDead;
+	bool m_isOver;
 	bool m_isMove;
 	bool m_isFront;
 

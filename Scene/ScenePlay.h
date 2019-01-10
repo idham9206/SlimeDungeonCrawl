@@ -40,7 +40,6 @@ private:
 
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteGoal;
 
 	//ダンジョンのハンドル
 	Dungeon* m_dungeon;
@@ -52,12 +51,23 @@ private:
 	std::unique_ptr<DirectX::SpriteBatch> m_spritesShadow;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureGoal;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureGameOver;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTNTUI;
 
 	//キーボードの押したらの情報ハンドル
 	DirectX::Keyboard::KeyboardStateTracker m_tracker;
 
 	//
+	DirectX::SimpleMath::Vector2 m_positionOver;
+
+	//
+	float m_startCD;
+
+	//
 	bool m_clearState;
+	bool m_startState;
+	bool m_gameOverState;
+
 	//EffectManager*							m_effectManager;
 
 };
