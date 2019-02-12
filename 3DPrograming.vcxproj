@@ -176,6 +176,7 @@
     <ClInclude Include="DirectXTK\Inc\VertexTypes.h" />
     <ClInclude Include="DirectXTK\Inc\WICTextureLoader.h" />
     <ClInclude Include="DirectXTK\Inc\XboxDDSTextureLoader.h" />
+    <ClInclude Include="Scene\ScenePlay\Enemy.h" />
     <ClInclude Include="Scene\ScenePlay\Player.h" />
     <ClInclude Include="Scene\ScenePlay\Dungeon.h" />
     <ClInclude Include="Game.h" />

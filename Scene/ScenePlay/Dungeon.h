@@ -25,6 +25,10 @@ public:
 	static const int MAZE_LENGTH = 10;
 	static const float TILE_SIZE;
 
+	//	仮ブロックと関係ある停機まとめ
+	static const float BLOCK_SPEED;
+	static const int BLOCK_MAXCOUNT = 3;
+
 
 private:
 	//仮のデバイスリソーシズ
@@ -35,13 +39,17 @@ private:
 
 	//外部からのデータ読み込みハンドル
 	DataLoad* m_loader;
-	//
 	TileID m_data[MAZE_WIDTH][MAZE_HEIGHT][MAZE_LENGTH];
 
 	// ブロック
 	std::unique_ptr<Obj3D> m_block[MAZE_WIDTH][MAZE_HEIGHT][MAZE_LENGTH];
 	std::unique_ptr<DirectX::Model> m_model[TILE_ID];
 
+	//仮ブロック落ちるハンドル
+	Obj3D* m_blockAlpha;
+	DirectX::SimpleMath::Vector3 m_spawnPosAlpha;
+	Obj3D* m_blockBeta[BLOCK_MAXCOUNT];
+	DirectX::SimpleMath::Vector3 m_spawnPosBeta[BLOCK_MAXCOUNT];
 
 public:
 	Dungeon();
@@ -56,6 +64,7 @@ public:
 	// 描画
 	void Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection);
 
+	//セッターゲッター関数まとめ
 	bool IDChecker(TileID tileID, DirectX::SimpleMath::Vector3 position);
 
 	bool IsMovable(DirectX::SimpleMath::Vector3 position);

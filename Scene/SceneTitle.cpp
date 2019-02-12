@@ -56,10 +56,9 @@ SceneBase * SceneTitle::Update(float elapsedTime)
 
 	m_blink->Update(time);
 
-	if (kb.Space)
+	if (m_tracker.IsKeyPressed(Keyboard::Keys::Space))
 	{
 		return new ScenePlay();
-
 	}
 	else
 	{
@@ -91,4 +90,7 @@ void SceneTitle::Reset()
 	// スプライトバッチの解放
 	m_sprites.reset();
 	m_sprites = nullptr;
+
+	delete m_blink;
+	m_blink = nullptr;
 }

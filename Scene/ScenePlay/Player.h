@@ -14,9 +14,8 @@ enum Direction
 	DIR_UP,        // 前
 	DIR_LEFT,      // 左
 	DIR_DOWN,      // 後ろ
-	//DIR_JUMP,
-	//DIR_FALL
 };
+// キャラクターステート--------
 enum State
 {
 	NONE,
@@ -27,6 +26,7 @@ enum State
 	HIT_FRONT,
 	HIT_BACK
 };
+
 // 方向ベクトル -----------------------------------------------------
 static const DirectX::SimpleMath::Vector3 DIRECTION_VECTOR[] =
 {
@@ -35,11 +35,7 @@ static const DirectX::SimpleMath::Vector3 DIRECTION_VECTOR[] =
 	DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.0f),
 	DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f),
 	DirectX::SimpleMath::Vector3(0.0f, 0.0f, 1.0f),
-	//DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f),
-	//DirectX::SimpleMath::Vector3(0.0f, -1.0f, 0.0f),
-
 };
-
 
 class Dungeon;
 
@@ -62,7 +58,7 @@ public:
 	void Fall();
 
 	//セッターゲッター関数まとめ
-	DirectX::SimpleMath::Vector3 GetPosition() { return m_player->GetPosition(); }
+	DirectX::SimpleMath::Vector3 GetPosition() { return m_position; }
 	void SetPosition(DirectX::SimpleMath::Vector3 position) { m_player->SetPosition(position); }
 	void SetDungeon(Dungeon* dungeon) { m_dungeon = dungeon; }
 	void SetCharaDeadState() { m_isDead = true; }
@@ -80,13 +76,16 @@ private:
 	std::unique_ptr<Obj2D> m_player;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture[6];
 
-	DirectX::Keyboard::KeyboardStateTracker tracker;
+	DirectX::SimpleMath::Vector3 m_position;
+
+	DirectX::Keyboard::KeyboardStateTracker m_tracker;
 
 	Direction m_movingDirection;
 	State m_charaState;
 
 	float m_speed;
 
+	//フラッグまとめ
 	bool m_isDead;
 	bool m_isOver;
 	bool m_isMove;

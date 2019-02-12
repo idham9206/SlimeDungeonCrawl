@@ -86,12 +86,13 @@ void Game::Update(DX::StepTimer const& timer)
 	// デバッグカメラの更新
 	//m_debugCamera->Update();
 
-	//シーンの更新
-	m_scene->Update(elapsedTime);
+//	m_scene->Update(elapsedTime);
 
 	{	
 		//次のシーンを用意する
 		SceneBase* next = nullptr;
+		//シーンの更新
+		//＋その受け取り
 		next = m_scene->Update(elapsedTime);
 
 		if (next != nullptr)
@@ -104,6 +105,10 @@ void Game::Update(DX::StepTimer const& timer)
 			//シーンの再初期化
 			m_scene->Initialize(m_deviceResources.get(), m_states.get());
 		}
+		////コピーされたあと解除する
+		//next->Reset();
+		//delete next;
+
 	}
 
 
