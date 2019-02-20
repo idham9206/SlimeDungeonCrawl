@@ -50,5 +50,4 @@ public:
 	// ‰ñ“]‚ğİ’è‚·‚éŠÖ”
 	void SetRotation(DirectX::SimpleMath::Quaternion rotation) { m_rotation = rotation; }
 
-	DirectX::SimpleMath::Vector3 GetPosition() { return m_position; }
 };

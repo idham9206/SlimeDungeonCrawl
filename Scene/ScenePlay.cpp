@@ -62,7 +62,7 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 
 
 	// テクスチャのロード
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\shadowbg.png", nullptr, m_textureShadow.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\shadowbg1.png", nullptr, m_textureShadow.GetAddressOf());
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\GameClear.png", nullptr, m_textureGoal.GetAddressOf());
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\GameOver.png", nullptr, m_textureGameOver.GetAddressOf());
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\GameTNTUI.png", nullptr, m_textureTNTUI.GetAddressOf());
@@ -125,13 +125,6 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 			if (m_dungeon->IsGoal(m_player->GetPosition()))
 			{
 				m_clearState = true;
-			}
-
-			if (m_dungeon->IDChecker(TileID::TILE_BLOCK1, m_player->GetPosition()) ||
-				m_dungeon->IDChecker(TileID::TILE_BLOCK2, m_player->GetPosition()))
-			{
-				m_player->SetGameOverState();
-
 			}
 
 			if (m_gameTimerCD < 0)
@@ -208,10 +201,7 @@ void ScenePlay::Render()
 
 	// スプライトの描画
 	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
-	if (m_startState)
-	{
-		m_sprites->Draw(m_textureTNTUI.Get(), Vector2(40.0f, 10.0f));
-	}
+	m_sprites->Draw(m_textureTNTUI.Get(), Vector2(40.0f, 10.0f));
 	if (m_clearState)
 	{
 		m_sprites->Draw(m_textureGoal.Get(), m_positionOver);
@@ -263,7 +253,7 @@ void ScenePlay::Reset()
 DirectX::SimpleMath::Vector3 ScenePlay::PlayerPositionToCamera()
 {
 
-	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 8.0f, m_player->GetPosition().z + 5.0f);
+	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 5.0f, m_player->GetPosition().z + 5.0f);
 }
 
 

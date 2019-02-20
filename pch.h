@@ -53,7 +53,6 @@
 #include <PrimitiveBatch.h>
 #include <VertexTypes.h>
 #include <Model.h>
-#include <time.h>
 
 namespace DX
 {

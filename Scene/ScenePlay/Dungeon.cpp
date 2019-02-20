@@ -5,11 +5,15 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
+<<<<<<< HEAD
 const float Dungeon::BLOCK_SPEED = 0.2f;
 
 Dungeon::Dungeon():
 	m_blockAlpha(nullptr), m_blockBeta{ nullptr }, m_spawnPosAlpha(Vector3::Zero), m_spawnPosBeta { Vector3::Zero },
 	m_block{ nullptr }, m_data { nullptr } , m_loader (nullptr)
+=======
+Dungeon::Dungeon()
+>>>>>>> parent of acc0c5c... daily commit
 {
 }
 
@@ -50,6 +54,7 @@ Dungeon::~Dungeon()
 
 		}
 	}
+<<<<<<< HEAD
 
 
 
@@ -96,6 +101,8 @@ Dungeon::~Dungeon()
 
 
 
+=======
+>>>>>>> parent of acc0c5c... daily commit
 }
 
 void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates * states)
@@ -147,22 +154,40 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 	m_model[TILE_BLOCK2] = Model::CreateFromCMO(device, L"Resources\\Models\\box5.cmo", fx);
 	m_model[TILE_GOAL] = Model::CreateFromCMO(device, L"Resources\\Models\\boxgoal1.cmo", fx);
 
+	for (int i = 0; i < MAZE_WIDTH; i++)
+	{
+		for (int j = 0; j < MAZE_HEIGHT; j++)
+		{
+			for (int k = 0; k < MAZE_LENGTH; k++)
+			{
+				m_block[i][j][k] = nullptr;
+				m_data[i][j][k] = TILE_NONE;
 
+			}
+		}
+	}
+
+<<<<<<< HEAD
 	//呼んだデータを変換する
 	for (int i = 0; i < m_mapWidth; i++)
+=======
+	for (int i = 0; i < MAZE_WIDTH; i++)
+>>>>>>> parent of acc0c5c... daily commit
 	{
 		for (int j = 0; j < m_mapHeight; j++)
 		{
 			for (int k = 0; k < m_mapLength; k++)
 			{
+
 				switch (m_loader->GetData()[i][j][k])
 				{
-				case 0: m_data[i][j][k] = TILE_NONE;  break;
+				case 0: m_data[i][j][k] = TILE_PASSAGE;  break;
 				case 1: m_data[i][j][k] = TILE_BLOCK1;	break;
 				case 2: m_data[i][j][k] = TILE_BLOCK2;	break;
 				case 3: m_data[i][j][k] = TILE_GOAL;	break;
-				default: m_data[i][j][k] = TILE_NONE;  break;
 				}
+
+
 			}
 		}
 	}
@@ -174,6 +199,8 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 		{
 			for (int k = 0; k < m_mapLength; k++)
 			{
+
+
 				switch (m_data[i][j][k])
 				{
 				case TILE_BLOCK1:
@@ -197,7 +224,9 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 				default:
 					break;
 				}
+
 			}
+
 		}
 	}
 	if (m_loader != nullptr)
@@ -209,8 +238,12 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 
 void Dungeon::Update(float elapsedTime)
 {
+<<<<<<< HEAD
 	//ブロックの更新処理
 	for (int i = 0; i < m_mapWidth; i++)
+=======
+	for (int i = 0; i < MAZE_WIDTH; i++)
+>>>>>>> parent of acc0c5c... daily commit
 	{
 		for (int j = 0; j < m_mapHeight; j++)
 		{
@@ -224,6 +257,7 @@ void Dungeon::Update(float elapsedTime)
 			}
 		}
 	}
+<<<<<<< HEAD
 
 	//仮ブロックまだなかったら作成処理
 	if (m_blockAlpha == nullptr)
@@ -357,6 +391,8 @@ void Dungeon::Update(float elapsedTime)
 	//	m_data[1][0][1] = TILE_NONE;
 
 	//}
+=======
+>>>>>>> parent of acc0c5c... daily commit
 }
 
 void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix & projection)
@@ -373,25 +409,17 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 					{
 						if (k < 9)
 						{
+<<<<<<< HEAD
 							m_block[i][j][k].Render(view, projection);
+=======
+							m_block[i][j][k]->Render(view, projection);
+
+>>>>>>> parent of acc0c5c... daily commit
 						}
 
 					}
 				}
 			}
-		}
-	}
-	if (m_blockAlpha != nullptr)
-	{
-		m_blockAlpha->Render(view, projection);
-	}
-
-	for (int i = 0; i < BLOCK_MAXCOUNT; i++)
-	{
-		if (m_blockBeta[i] != nullptr)
-		{
-			m_blockBeta[i]->Render(view, projection);
-
 		}
 	}
 }
@@ -401,7 +429,7 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 /*マップチップによる当たり判定*/
 bool Dungeon::IDChecker(TileID tileID, DirectX::SimpleMath::Vector3 position)
 {	
-	if (m_data[(int)position.x][(int)position.y][(int)position.z] == tileID)
+	if (m_data[(int)position.x][(int)position.y][(int)position.z] != tileID)
 	{
 		return true;
 	}
