@@ -371,7 +371,7 @@ void Player::AMove()
 
 		if (m_dungeon->IsMovable(Vector3((m_position.x), (m_position.y - 1.0f), (m_position.z))))
 		{
-			if (m_dungeon->IsMovable(Vector3((m_position.x), (m_position.y), (m_position.z))))
+			if (m_dungeon->FallingDown(Vector3((m_position.x), (m_position.y), (m_position.z))))
 			{
 				m_position.y--;
 				//m_player->SetPosition(Vector3(position.x, position.y - 1.0f, position.z));

@@ -25,7 +25,7 @@ Game::Game()
     m_deviceResources = std::make_unique<DX::DeviceResources>();
     m_deviceResources->RegisterDeviceNotify(this);
 
-	m_scene = new SceneTitle();
+	m_scene = new ScenePlay();
 }
 
 // Initialize the Direct3D resources required to run.

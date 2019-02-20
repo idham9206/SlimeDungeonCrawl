@@ -9,29 +9,37 @@ const float Dungeon::BLOCK_SPEED = 0.2f;
 
 Dungeon::Dungeon():
 	m_blockAlpha(nullptr), m_blockBeta{ nullptr }, m_spawnPosAlpha(Vector3::Zero), m_spawnPosBeta { Vector3::Zero },
-	m_block{ nullptr }, m_data { TILE_NONE }
+	m_block{ nullptr }, m_data { nullptr } , m_loader (nullptr)
 {
 }
 
 
 Dungeon::~Dungeon()
 {
-	for (int i = 0; i < MAZE_WIDTH; i++)
+
+	// ブロック領域の破棄
+	for (int i = 0; i < m_mapWidth; i++)
 	{
-		for (int j = 0; j < MAZE_HEIGHT; j++)
+		for (int j = 0; j < m_mapHeight; j++)
 		{
-			for (int k = 0; k < MAZE_LENGTH; k++)
+			if (m_block[i][j] != nullptr)
 			{
-				if (m_block[i][j][k] != nullptr)
-				{
-					m_block[i][j][k].reset();
-					m_block[i][j][k] = nullptr;
-
-				}
-
+				delete m_block[i][j];
+				m_block[i][j] = nullptr;
 			}
 		}
+		if (m_block[i] != nullptr)
+		{
+			delete m_block[i];
+			m_block[i] = nullptr;
+		}
 	}
+	if (m_block != nullptr)
+	{
+		delete m_block;
+		m_block = nullptr;
+	}
+
 
 	for (int i = 0; i < TILE_ID; i++)
 	{
@@ -62,6 +70,32 @@ Dungeon::~Dungeon()
 
 	}
 
+	// データ領域の破棄
+	for (int i = 0; i < m_mapWidth; i++)
+	{
+		for (int j = 0; j < m_mapHeight; j++)
+		{
+			if (m_data[i][j] != nullptr)
+			{
+				delete m_data[i][j];
+				m_data[i][j] = nullptr;
+			}
+		}
+		if (m_data[i] != nullptr)
+		{
+			delete m_data[i];
+			m_data[i] = nullptr;
+		}
+	}
+	if (m_data != nullptr)
+	{
+		delete m_data;
+		m_data = nullptr;
+	}
+
+
+
+
 }
 
 void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates * states)
@@ -80,6 +114,34 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 	m_loader = new DataLoad();
 	m_loader->LoadData(L"Stage00.csv");
 
+	m_mapWidth = m_loader->GetWidth();
+	m_mapHeight = m_loader->GetHeight();
+	m_mapLength = m_loader->GetLength();
+
+	m_data = new TileID**[m_mapWidth];
+	for (int i = 0; i < m_mapWidth; i++)
+	{
+		m_data[i] = new TileID*[m_mapHeight];
+		for (int j = 0; j < m_mapHeight; j++)
+		{
+			m_data[i][j] = new TileID[m_mapLength];
+		}
+
+	}
+
+
+	m_block = new Obj3D**[m_mapWidth];
+	for (int i = 0; i < m_mapWidth; i++)
+	{
+		m_block[i] = new Obj3D*[m_mapHeight];
+		for (int j = 0; j < m_mapHeight; j++)
+		{
+			m_block[i][j] = new Obj3D[m_mapLength];
+		}
+
+	}
+
+
 	//モデル制作
 	m_model[TILE_BLOCK1] = Model::CreateFromCMO(device, L"Resources\\Models\\box.cmo", fx);
 	m_model[TILE_BLOCK2] = Model::CreateFromCMO(device, L"Resources\\Models\\box5.cmo", fx);
@@ -87,11 +149,11 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 
 
 	//呼んだデータを変換する
-	for (int i = 0; i < MAZE_WIDTH; i++)
+	for (int i = 0; i < m_mapWidth; i++)
 	{
-		for (int j = 0; j < MAZE_HEIGHT; j++)
+		for (int j = 0; j < m_mapHeight; j++)
 		{
-			for (int k = 0; k < MAZE_LENGTH; k++)
+			for (int k = 0; k < m_mapLength; k++)
 			{
 				switch (m_loader->GetData()[i][j][k])
 				{
@@ -106,33 +168,30 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 	}
 
 	// ブロックを作成
-	for (int i = 0; i < MAZE_WIDTH; i++)
+	for (int i = 0; i < m_mapWidth; i++)
 	{
-		for (int j = 0; j < MAZE_HEIGHT; j++)
+		for (int j = 0; j < m_mapHeight; j++)
 		{
-			for (int k = 0; k < MAZE_LENGTH; k++)
+			for (int k = 0; k < m_mapLength; k++)
 			{
 				switch (m_data[i][j][k])
 				{
 				case TILE_BLOCK1:
-					m_block[i][j][k] = std::make_unique<Obj3D>();
-					m_block[i][j][k]->Initialize(m_deviceResources, m_states);
-					m_block[i][j][k]->SetModel(m_model[TILE_BLOCK1].get());
-					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
+					m_block[i][j][k].Initialize(m_deviceResources, m_states);
+					m_block[i][j][k].SetModel(m_model[TILE_BLOCK1].get());
+					m_block[i][j][k].SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
 					break;
 
 				case TILE_BLOCK2:
-					m_block[i][j][k] = std::make_unique<Obj3D>();
-					m_block[i][j][k]->Initialize(m_deviceResources, m_states);
-					m_block[i][j][k]->SetModel(m_model[TILE_BLOCK2].get());
-					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
+					m_block[i][j][k].Initialize(m_deviceResources, m_states);
+					m_block[i][j][k].SetModel(m_model[TILE_BLOCK2].get());
+					m_block[i][j][k].SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
 					break;
 
 				case TILE_GOAL:
-					m_block[i][j][k] = std::make_unique<Obj3D>();
-					m_block[i][j][k]->Initialize(m_deviceResources, m_states);
-					m_block[i][j][k]->SetModel(m_model[TILE_GOAL].get());
-					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.5f + (float)j, (float)k));
+					m_block[i][j][k].Initialize(m_deviceResources, m_states);
+					m_block[i][j][k].SetModel(m_model[TILE_GOAL].get());
+					m_block[i][j][k].SetPosition(Vector3((float)i, -1.5f + (float)j, (float)k));
 					break;
 
 				default:
@@ -141,22 +200,25 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 			}
 		}
 	}
-	delete m_loader;
-	m_loader = nullptr;
+	if (m_loader != nullptr)
+	{
+		delete m_loader;
+		m_loader = nullptr;
+	}
 }
 
 void Dungeon::Update(float elapsedTime)
 {
 	//ブロックの更新処理
-	for (int i = 0; i < MAZE_WIDTH; i++)
+	for (int i = 0; i < m_mapWidth; i++)
 	{
-		for (int j = 0; j < MAZE_HEIGHT; j++)
+		for (int j = 0; j < m_mapHeight; j++)
 		{
-			for (int k = 0; k < MAZE_LENGTH; k++)
+			for (int k = 0; k < m_mapLength; k++)
 			{
-				if (m_block[i][j][k] != nullptr)
+				//if (m_block[i][j][k] != nullptr_t)
 				{
-					m_block[i][j][k]->Update(elapsedTime);
+					m_block[i][j][k].Update(elapsedTime);
 
 				}
 			}
@@ -234,12 +296,12 @@ void Dungeon::Update(float elapsedTime)
 				int i = (int)m_spawnPosAlpha.x;
 				int j = (int)m_spawnPosAlpha.y;
 				int k = (int)m_spawnPosAlpha.z;
-				if (m_block[i][j][k] == nullptr)
+				//if (m_block[i][j][k] == nullptr)
 				{
-					m_block[i][j][k] = std::make_unique<Obj3D>();
-					m_block[i][j][k]->Initialize(m_deviceResources, m_states);
-					m_block[i][j][k]->SetModel(m_model[TILE_BLOCK1].get());
-					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
+					//m_block[i][j][k] = std::make_unique<Obj3D>();
+					m_block[i][j][k].Initialize(m_deviceResources, m_states);
+					m_block[i][j][k].SetModel(m_model[TILE_BLOCK1].get());
+					m_block[i][j][k].SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
 				}
 
 
@@ -260,12 +322,12 @@ void Dungeon::Update(float elapsedTime)
 						int i = (int)m_spawnPosBeta[l].x;
 						int j = (int)m_spawnPosBeta[l].y;
 						int k = (int)m_spawnPosBeta[l].z;
-						if (m_block[i][j][k] == nullptr)
+						//if (m_block[i][j][k] == nullptr)
 						{
-							m_block[i][j][k] = std::make_unique<Obj3D>();
-							m_block[i][j][k]->Initialize(m_deviceResources, m_states);
-							m_block[i][j][k]->SetModel(m_model[TILE_BLOCK1].get());
-							m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
+							//m_block[i][j][k] = std::make_unique<Obj3D>();
+							m_block[i][j][k].Initialize(m_deviceResources, m_states);
+							m_block[i][j][k].SetModel(m_model[TILE_BLOCK1].get());
+							m_block[i][j][k].SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
 						}
 
 						if (m_data[i][j][k] == TILE_NONE)
@@ -299,19 +361,19 @@ void Dungeon::Update(float elapsedTime)
 
 void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix & projection)
 {
-	for (int i = 0; i < MAZE_WIDTH; i++)
+	for (int i = 0; i < m_mapWidth; i++)
 	{
-		for (int j = 0; j < MAZE_HEIGHT; j++)
+		for (int j = 0; j < m_mapHeight; j++)
 		{
-			for (int k = 0; k < MAZE_LENGTH; k++)
+			for (int k = 0; k < m_mapLength; k++)
 			{
-				if (m_block[i][j][k] != nullptr)
+				//if (m_block[i][j][k] != nullptr)
 				{
 					if (m_data[i][j][k] != 0)
 					{
 						if (k < 9)
 						{
-							m_block[i][j][k]->Render(view, projection);
+							m_block[i][j][k].Render(view, projection);
 						}
 
 					}
@@ -401,7 +463,7 @@ bool Dungeon::IsClimbing(DirectX::SimpleMath::Vector3 position)
 
 bool Dungeon::FallingDown(DirectX::SimpleMath::Vector3 position)
 {
-	if (m_data[(int)position.x][(int)position.y - 1][(int)position.z] != TILE_NONE)
+	if (m_data[(int)position.x][(int)position.y - 1][(int)position.z] == TILE_NONE)
 	{
 		return true;
 	}

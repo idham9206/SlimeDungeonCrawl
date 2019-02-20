@@ -20,9 +20,6 @@ enum TileID : unsigned char
 class Dungeon
 {
 public:
-	static const int MAZE_WIDTH = 10;
-	static const int MAZE_HEIGHT = 10;
-	static const int MAZE_LENGTH = 10;
 	static const float TILE_SIZE;
 
 	//	仮ブロックと関係ある停機まとめ
@@ -39,10 +36,15 @@ private:
 
 	//外部からのデータ読み込みハンドル
 	DataLoad* m_loader;
-	TileID m_data[MAZE_WIDTH][MAZE_HEIGHT][MAZE_LENGTH];
+
+	int m_mapWidth;
+	int m_mapHeight;
+	int m_mapLength;
+
+	TileID*** m_data;
 
 	// ブロック
-	std::unique_ptr<Obj3D> m_block[MAZE_WIDTH][MAZE_HEIGHT][MAZE_LENGTH];
+	Obj3D*** m_block;
 	std::unique_ptr<DirectX::Model> m_model[TILE_ID];
 
 	//仮ブロック落ちるハンドル
@@ -50,6 +52,8 @@ private:
 	DirectX::SimpleMath::Vector3 m_spawnPosAlpha;
 	Obj3D* m_blockBeta[BLOCK_MAXCOUNT];
 	DirectX::SimpleMath::Vector3 m_spawnPosBeta[BLOCK_MAXCOUNT];
+
+
 
 public:
 	Dungeon();

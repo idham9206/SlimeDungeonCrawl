@@ -18,19 +18,23 @@ DataLoad::DataLoad()
 
 DataLoad::~DataLoad()
 {
-	// データ領域の破棄
-	for (int i = 0; i < m_mapWidth; i++)
+	if (m_data != nullptr)
 	{
-		for (int j = 0; j < m_mapHeight; j++)
+		// データ領域の破棄
+		for (int i = 0; i < m_mapWidth; i++)
 		{
-			delete m_data[i][j];
-			m_data[i][j] = nullptr;
+			for (int j = 0; j < m_mapHeight; j++)
+			{
+				delete m_data[i][j];
+				m_data[i][j] = nullptr;
+			}
+			delete m_data[i];
+			m_data[i] = nullptr;
 		}
-		delete m_data[i];
-		m_data[i] = nullptr;
+		delete m_data;
+		m_data = nullptr;
+
 	}
-	delete m_data;
-	m_data = nullptr;
 }
 
 
