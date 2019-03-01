@@ -195,7 +195,7 @@ void ScenePlay::Render()
 
 	// スプライトの描画
 	m_spritesShadow->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
-	m_spritesShadow->Draw(m_textureShadow.Get(), Vector2::Zero);
+	//m_spritesShadow->Draw(m_textureShadow.Get(), Vector2::Zero);
 	m_spritesShadow->End();
 
 
@@ -253,7 +253,7 @@ void ScenePlay::Reset()
 DirectX::SimpleMath::Vector3 ScenePlay::PlayerPositionToCamera()
 {
 
-	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 5.0f, m_player->GetPosition().z + 5.0f);
+	return DirectX::SimpleMath::Vector3(m_player->GetPosition().x + 0.0f, m_player->GetPosition().y + 7.0f, m_player->GetPosition().z + 5.0f);
 }
 
 

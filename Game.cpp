@@ -87,7 +87,7 @@ void Game::Update(DX::StepTimer const& timer)
 	//m_debugCamera->Update();
 
 	//シーンの更新
-	m_scene->Update(elapsedTime);
+	//m_scene->Update(elapsedTime);
 
 	{	
 		//次のシーンを用意する

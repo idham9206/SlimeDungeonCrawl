@@ -8,7 +8,7 @@ using namespace DirectX::SimpleMath;
 
 Player::Player():
 	m_dungeon(nullptr), m_deviceResources(nullptr),
-	m_movingDirection(DIR_NONE), m_charaState(NONE), m_speed(0.1f),
+	m_movingDirection(DIR_NONE), m_charaState(NONE), m_speed(0.1f), m_position(Vector3::Zero),
 	m_isDead(false), m_isMove(false), m_isFront(true), m_isOver(false)
 {
 }
@@ -46,7 +46,8 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_hit(back).png", nullptr, m_playerTexture[5].GetAddressOf());
 	//============================================================================================================================
 	m_player = std::make_unique<Obj2D>();
-	m_player->SetPosition(Vector3(5.0f, 1.0f, 5.0f));
+	m_position = Vector3(5.0f, 1.0f, 5.0f);
+	m_player->SetPosition(m_position);
 	m_player->Initialize(m_deviceResources, states, 4);
 	m_player->SetTexture(m_playerTexture[0].Get());
 
@@ -171,15 +172,14 @@ void Player::Move()
 	//m_tracker.Update(kb);
 
 	//プレイヤーの位置取得
-	Vector3 position = m_player->GetPosition();
-	int iPosBuffX = (int)position.x;
-	int iPosBuffY = (int)position.y;
-	int iPosBuffZ = (int)position.z;
+	int iPosBuffX = (int)m_position.x;
+	int iPosBuffY = (int)m_position.y;
+	int iPosBuffZ = (int)m_position.z;
 	Vector3 fPosBuff = Vector3((float)iPosBuffX, (float)iPosBuffY, (float)iPosBuffZ);
 
 	Direction nextMovingDirection = DIR_NONE;
 	static int countdown = 10;
-	static float wasPosition = position.y;
+	static float wasPosition = m_position.y;
 	countdown--;
 
 	m_isMove = false;
@@ -270,7 +270,7 @@ void Player::Move()
 void Player::AMove()
 {
 	auto kb = Keyboard::Get().GetState();
-	Vector3 position = m_player->GetPosition();
+	//Vector3 position = m_player->GetPosition();
 
 	static int countdown = 10;
 
@@ -280,39 +280,37 @@ void Player::AMove()
 	{
 		if (kb.Up)
 		{
-			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))))
+			if (m_dungeon->IsMovable(Vector3(m_position.x, m_position.y, (m_position.z - 1.0f))))
 			{
 				//position.z--;
 				//m_player->SetPosition(position);
 
 			}
-			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z - 1.0f))) &&
-				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z - 1.0f))))
+			else if (!m_dungeon->IsMovable(Vector3(m_position.x, m_position.y, (m_position.z - 1.0f))) &&
+				m_dungeon->IsMovable(Vector3((m_position.x), (m_position.y + 1.0f), (m_position.z - 1.0f))))
 			{
 				{
-					//position.z--;
-					//position.y++;
-					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z - 1.0f));
+					m_position.z--;
+					m_position.y++;
 					countdown = 10;
 				}
 			}
 		}
 		else if (kb.Down)
 		{
-			if (m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))))
+			if (m_dungeon->IsMovable(Vector3(m_position.x, m_position.y, (m_position.z + 1.0f))))
 			{
 				//position.z++;
 				//m_player->SetPosition(position);
 
 
 			}
-			else if (!m_dungeon->IsMovable(Vector3(position.x, position.y, (position.z + 1.0f))) &&
-				m_dungeon->IsMovable(Vector3((position.x), (position.y + 1.0f), (position.z + 1.0f))))
+			else if (!m_dungeon->IsMovable(Vector3(m_position.x, m_position.y, (m_position.z + 1.0f))) &&
+				m_dungeon->IsMovable(Vector3((m_position.x), (m_position.y + 1.0f), (m_position.z + 1.0f))))
 			{
 				{
-					//position.z++;
-					//position.y++;
-					m_player->SetPosition(Vector3(position.x, position.y + 1.0f, position.z + 1.0f));
+					m_position.z++;
+					m_position.y++;
 					countdown = 10;
 
 				}
@@ -322,19 +320,18 @@ void Player::AMove()
 		}
 		else if (kb.Right)
 		{
-			if (m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))))
+			if (m_dungeon->IsMovable(Vector3((m_position.x + 1.0f), m_position.y, (m_position.z))))
 			{
 				//position.x++;
 				//m_player->SetPosition(position);
 
 			}
-			else if (!m_dungeon->IsMovable(Vector3((position.x + 1.0f), position.y, (position.z))) &&
-				m_dungeon->IsMovable(Vector3((position.x + 1.0f), (position.y + 1.0f), (position.z))))
+			else if (!m_dungeon->IsMovable(Vector3((m_position.x + 1.0f), m_position.y, (m_position.z))) &&
+				m_dungeon->IsMovable(Vector3((m_position.x + 1.0f), (m_position.y + 1.0f), (m_position.z))))
 			{
 				{
-					//position.x++;
-					//position.y++;
-					m_player->SetPosition(Vector3(position.x + 1.0f, position.y + 1.0f, position.z));
+					m_position.x++;
+					m_position.y++;
 					countdown = 10;
 
 				}
@@ -344,20 +341,19 @@ void Player::AMove()
 		else if (kb.Left)
 		{
 
-			if (m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))))
+			if (m_dungeon->IsMovable(Vector3((m_position.x - 1.0f), m_position.y, (m_position.z))))
 			{
 				//position.x--;
 				//m_player->SetPosition(position);
 
 
 			}
-			else if (!m_dungeon->IsMovable(Vector3((position.x - 1.0f), position.y, (position.z))) &&
-				m_dungeon->IsMovable(Vector3((position.x - 1.0f), (position.y + 1.0f), (position.z))))
+			else if (!m_dungeon->IsMovable(Vector3((m_position.x - 1.0f), m_position.y, (m_position.z))) &&
+				m_dungeon->IsMovable(Vector3((m_position.x - 1.0f), (m_position.y + 1.0f), (m_position.z))))
 			{
 				{
-					//position.x--;
-					//position.y++;
-					m_player->SetPosition(Vector3(position.x - 1.0f, position.y + 1.0f, position.z));
+					m_position.x--;
+					m_position.y++;
 					countdown = 10;
 
 				}
@@ -366,25 +362,25 @@ void Player::AMove()
 
 		}
 
-
-		if (m_dungeon->IsMovable(Vector3((position.x), (position.y - 1.0f), (position.z))))
+		if (m_dungeon->IsMovable(Vector3((m_position.x), (m_position.y - 1.0f), (m_position.z))))
 		{
-<<<<<<< HEAD
-			if (m_dungeon->FallingDown(Vector3((m_position.x), (m_position.y), (m_position.z))))
-=======
-			if (m_dungeon->IsMovable(Vector3((position.x), (position.y), (position.z))))
->>>>>>> parent of acc0c5c... daily commit
+			if (m_dungeon->IsMovable(m_position))
 			{
-				//position.y--;
-				m_player->SetPosition(Vector3(position.x, position.y - 1.0f, position.z));
+				m_position.y--;
 				countdown = 10;
 
 			}
 
 		}
 
-	}
 
+
+
+		m_player->SetPosition(m_position);
+
+
+
+	}
 }
 
 
@@ -392,10 +388,10 @@ void Player::AMove()
 Direction Player::PMove(Direction nextDirection)
 {
 	//プレイヤーの位置取得
-	Vector3 position = m_player->GetPosition();
-	int iPosBuffX = (int)position.x;
-	int iPosBuffY = (int)position.y;
-	int iPosBuffZ = (int)position.z;
+	//Vector3 position = m_position;
+	int iPosBuffX = (int)m_position.x;
+	int iPosBuffY = (int)m_position.y;
+	int iPosBuffZ = (int)m_position.z;
 	Vector3 fPosBuff = Vector3((float)iPosBuffX, (float)iPosBuffY, (float)iPosBuffZ);
 	// ローカル変数の定義 -----------------------------------
 	Vector3 velocity = Vector3::Zero;    // 速度
@@ -410,7 +406,7 @@ Direction Player::PMove(Direction nextDirection)
 	// 直角に方向転換する場合 --------------------------------
 	if (m_movingDirection % 2 != nextDirection % 2)
 	{
-		Vector3 differenceVector = center - m_player->GetPosition();          // 中心座標と現在位置の差分ベクトル
+		Vector3 differenceVector = center - m_position;          // 中心座標と現在位置の差分ベクトル
 		float distance = differenceVector.Length();    // 中心座標と現在位置との距離
 
 		if (distance < m_speed)    // このフレームで中心にたどり着ける場合
@@ -448,7 +444,7 @@ Direction Player::PMove(Direction nextDirection)
 		Vector3 nextMovingDirectionVector = DIRECTION_VECTOR[nextDirection];    // 方向ベクトルの算出
 		velocity = nextMovingDirectionVector * speed;
 
-		Vector3 nextPosition = m_player->GetPosition() + velocity;    // 移動予定の位置
+		Vector3 nextPosition = m_position + velocity;    // 移動予定の位置
 
 		Vector3 destination = fPosBuff + nextMovingDirectionVector;   // 目的地
 		int iDesBuffX = (int)destination.x;
@@ -463,7 +459,7 @@ Direction Player::PMove(Direction nextDirection)
 		{
 			if (!m_dungeon->IsMovable(destination))
 			{
-				velocity = center - m_player->GetPosition();
+				velocity = center - m_position;
 			}
 		}
 	}
@@ -488,9 +484,10 @@ Direction Player::PMove(Direction nextDirection)
 
 
 	//}
-	
 	// 移動処理 ------------------------------------
-	m_player->SetPosition(m_player->GetPosition() + velocity); // 速度分の移動
+	m_position += velocity; // 速度分の移動
+
+	m_player->SetPosition(m_position); 
 
 	return nextDirection;
 }

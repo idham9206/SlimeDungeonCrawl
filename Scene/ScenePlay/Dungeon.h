@@ -21,7 +21,12 @@ class Dungeon
 {
 public:
 	static const float TILE_SIZE;
+	static const int MAZE_WIDTH = 10;
+	static const int MAZE_HEIGHT = 10;
+	static const int MAZE_LENGTH = 10;
 
+	static const float BLOCK_SPEED;
+	static const int BLOCK_MAXCOUNT = 3;
 
 private:
 	//仮のデバイスリソーシズ
@@ -32,24 +37,15 @@ private:
 
 	//外部からのデータ読み込みハンドル
 	DataLoad* m_loader;
-<<<<<<< HEAD
-
-	int m_mapWidth;
-	int m_mapHeight;
-	int m_mapLength;
-
-	TileID*** m_data;
-=======
-	//
 	TileID m_data[MAZE_WIDTH][MAZE_HEIGHT][MAZE_LENGTH];
->>>>>>> parent of acc0c5c... daily commit
-
 	// ブロック
-	Obj3D*** m_block;
+	std::unique_ptr<Obj3D> m_block[MAZE_WIDTH][MAZE_HEIGHT][MAZE_LENGTH];
 	std::unique_ptr<DirectX::Model> m_model[TILE_ID];
 
-
-
+	Obj3D* m_blockAlpha;
+	DirectX::SimpleMath::Vector3 m_spawnPosAlpha;
+	Obj3D* m_blockBeta[BLOCK_MAXCOUNT];
+	DirectX::SimpleMath::Vector3 m_spawnPosBeta[BLOCK_MAXCOUNT]; 
 
 public:
 	Dungeon();

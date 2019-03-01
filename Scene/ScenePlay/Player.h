@@ -77,13 +77,14 @@ private:
 	Dungeon* m_dungeon;
 
 	//プレイヤーのハンドル
-	std::unique_ptr<Obj2D> m_player;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture[6];
+	std::unique_ptr<Obj2D> m_player; //プレイヤー
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerTexture[6]; //テクスチャー
+	DirectX::SimpleMath::Vector3 m_position; //
+	Direction m_movingDirection; //
+	State m_charaState; //
 
 	DirectX::Keyboard::KeyboardStateTracker tracker;
 
-	Direction m_movingDirection;
-	State m_charaState;
 
 	float m_speed;
 
