@@ -122,6 +122,12 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 				}
 			}
 
+			if (m_dungeon->IDChecker(TileID::TILE_BLOCK1, m_player->GetPosition()) ||
+				m_dungeon->IDChecker(TileID::TILE_BLOCK2, m_player->GetPosition()))
+			{
+				m_player->SetGameOverState();
+			}
+
 			if (m_dungeon->IsGoal(m_player->GetPosition()))
 			{
 				m_clearState = true;

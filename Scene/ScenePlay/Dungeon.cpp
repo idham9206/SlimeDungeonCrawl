@@ -382,7 +382,7 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 /*マップチップによる当たり判定*/
 bool Dungeon::IDChecker(TileID tileID, DirectX::SimpleMath::Vector3 position)
 {	
-	if (m_data[(int)position.x][(int)position.y][(int)position.z] != tileID)
+	if (m_data[(int)position.x][(int)position.y][(int)position.z] == tileID)
 	{
 		return true;
 	}
