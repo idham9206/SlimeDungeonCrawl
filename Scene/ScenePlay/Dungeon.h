@@ -9,7 +9,7 @@ enum TileID : unsigned char
 	TILE_BLOCK1,
 	TILE_BLOCK2,
 	TILE_GOAL,
-	TILE_TRAP1,
+	TILE_FALLINGBLOCK1,
 
 	TILE_ID,
 
@@ -42,10 +42,37 @@ private:
 	std::unique_ptr<Obj3D> m_block[MAZE_WIDTH][MAZE_HEIGHT][MAZE_LENGTH];
 	std::unique_ptr<DirectX::Model> m_model[TILE_ID];
 
-	Obj3D* m_blockAlpha;
-	DirectX::SimpleMath::Vector3 m_spawnPosAlpha;
-	Obj3D* m_blockBeta[BLOCK_MAXCOUNT];
-	DirectX::SimpleMath::Vector3 m_spawnPosBeta[BLOCK_MAXCOUNT]; 
+	//仮プレイヤー位置
+	DirectX::SimpleMath::Vector3 m_playerPos;
+
+	//ブロックがすぐ出すでなければ、この変数でフラッグ立てる
+	int blockCD;
+	int m_CD;
+
+	//影の関連ハンドル　============================
+	bool m_shadowFlag;
+	//影のテクスチャー
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow;
+	//影の位置
+	DirectX::SimpleMath::Vector3 m_shadowPos;
+	// エフェクト
+	std::unique_ptr<DirectX::AlphaTestEffect> m_shadowBatchEffect;
+	// プリミティブバッチ
+	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>> m_shadowBatch;
+	// 入力レイアウト
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_shadowInputLayout;
+	//=============================================
+
+
+	//落ちるブロック用の変数
+		//乱数で使ってる場合
+		Obj3D* m_blockAlpha;
+		DirectX::SimpleMath::Vector3 m_spawnPosAlpha;
+		Obj3D* m_blockBeta[BLOCK_MAXCOUNT];
+		DirectX::SimpleMath::Vector3 m_spawnPosBeta[BLOCK_MAXCOUNT];
+		//落ちるブロックパターン1
+		DirectX::SimpleMath::Vector3 m_fallingBlockPos[5];
+		
 
 public:
 	Dungeon();
@@ -55,11 +82,13 @@ public:
 	void Initialize(DX::DeviceResources* deviceResources, DirectX::CommonStates* states);
 
 	// 更新
-	void Update(float elapsedTime);
+	void Update(float elapsedTime, bool startFlag);
 
 	// 描画
-	void Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix& projection);
+	void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix & projection);
 
+	//セッターゲッター関数まとめ
+	//チェッカー系
 	bool IDChecker(TileID tileID, DirectX::SimpleMath::Vector3 position);
 
 	bool IsMovable(DirectX::SimpleMath::Vector3 position);
@@ -68,6 +97,12 @@ public:
 	bool FallingDown(DirectX::SimpleMath::Vector3 position);
 
 	bool IsGoal(DirectX::SimpleMath::Vector3 position);
+
+	//セッター
+	void PlayerPosition(DirectX::SimpleMath::Vector3 playerPosition)
+	{
+		m_playerPos = playerPosition;
+	}
 
 };
 

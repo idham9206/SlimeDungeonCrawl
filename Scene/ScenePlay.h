@@ -48,14 +48,17 @@ private:
 	std::unique_ptr<Player> m_player;
 
 	// ブラックアウトエフェクトスプライトバッチ
-	std::unique_ptr<DirectX::SpriteBatch> m_spritesShadow;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureGoal;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureGameOver;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTNTUI;
+	//Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTNTUI;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureMagma;
 
 	//キーボードの押したらの情報ハンドル
 	DirectX::Keyboard::KeyboardStateTracker m_tracker;
+
+	//マグマのポジション
+	DirectX::SimpleMath::Vector2 m_posMagma[2];
 
 	//
 	DirectX::SimpleMath::Vector2 m_positionOver;

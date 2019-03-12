@@ -8,8 +8,10 @@ using namespace DirectX::SimpleMath;
 const float Dungeon::BLOCK_SPEED = 0.2f;
 
 Dungeon::Dungeon():
-	m_blockAlpha(nullptr), m_blockBeta{ nullptr }, m_spawnPosAlpha(Vector3::Zero), m_spawnPosBeta { Vector3::Zero },
-	m_block{ nullptr }, m_data { TILE_NONE } , m_loader (nullptr)
+	m_blockAlpha(nullptr), /*m_blockBeta{ nullptr } ,*/ m_spawnPosAlpha(Vector3::Zero), m_spawnPosBeta { Vector3::Zero }, 
+	m_playerPos ( Vector3::Zero ), m_shadowPos (Vector3::Zero),
+	m_block{ nullptr }, m_data { TILE_NONE } , m_loader (nullptr),
+	blockCD ( 40 ), m_CD(10)
 {
 }
 
@@ -47,15 +49,15 @@ Dungeon::~Dungeon()
 		}
 	}
 
-	for (int i = 0; i < BLOCK_MAXCOUNT; i++)
-	{
-		if (m_blockBeta[i] != nullptr)
-		{
-			delete m_blockBeta[i];
-			m_blockBeta[i] = nullptr;
-		}
+	//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
+	//{
+	//	if (m_blockBeta[i] != nullptr)
+	//	{
+	//		delete m_blockBeta[i];
+	//		m_blockBeta[i] = nullptr;
+	//	}
 
-	}
+	//}
 
 	if (m_blockAlpha != nullptr)
 	{
@@ -83,6 +85,28 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 	m_loader->LoadData(L"Stage00.csv");
 
 
+	//==================================
+	//影の関連
+	//==================================
+	// テクスチャのロード
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\shadowbg1.png", nullptr, m_textureShadow.GetAddressOf());
+	// エフェクトの作成
+	m_shadowBatchEffect = std::make_unique<AlphaTestEffect>(device);
+	m_shadowBatchEffect->SetAlphaFunction(D3D11_COMPARISON_EQUAL);
+	m_shadowBatchEffect->SetReferenceAlpha(255);
+
+	// 入力レイアウト生成
+	void const* shaderByteCode;
+	size_t byteCodeLength;
+	m_shadowBatchEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+	device->CreateInputLayout(VertexPositionTexture::InputElements, VertexPositionTexture::InputElementCount,
+		shaderByteCode, byteCodeLength, m_shadowInputLayout.GetAddressOf());
+
+
+	// プリミティブバッチの作成
+	m_shadowBatch = std::make_unique<PrimitiveBatch<VertexPositionTexture>>(context);
+
+	//===================================
 
 
 	//モデル制作
@@ -130,6 +154,11 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 				case 1: m_data[i][j][k] = TILE_BLOCK1;	break;
 				case 2: m_data[i][j][k] = TILE_BLOCK2;	break;
 				case 3: m_data[i][j][k] = TILE_GOAL;	break;
+				//======================================
+				case 11: m_data[i][j][k] = TILE_FALLINGBLOCK1; break;
+
+				//======================================
+				default : m_data[i][j][k] = TILE_NONE;  break;
 				}
 
 
@@ -169,6 +198,11 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 					m_block[i][j][k]->SetPosition(Vector3((float)i, -1.5f + (float)j, (float)k));
 					break;
 
+				case TILE_FALLINGBLOCK1:
+					m_spawnPosAlpha = Vector3( i, j + 5, k);
+					m_shadowPos = Vector3(i, j, k);
+					break;
+
 				default:
 					break;
 				}
@@ -184,8 +218,17 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 	}
 }
 
-void Dungeon::Update(float elapsedTime)
+void Dungeon::Update(float elapsedTime, bool startFlag)
 {
+	if (blockCD > 0 && startFlag)
+	{
+		blockCD--;
+	}
+	if (m_CD >= 0)
+	{
+		m_CD--;
+	}
+
 	for (int i = 0; i < MAZE_WIDTH; i++)
 	{
 		for (int j = 0; j < MAZE_HEIGHT; j++)
@@ -203,68 +246,70 @@ void Dungeon::Update(float elapsedTime)
 		}
 
 		//仮ブロックまだなかったら作成処理
-		if (m_blockAlpha == nullptr)
+		if (blockCD <= 0)
 		{
-			//乱数のシードをリセットする。
-			//rand((unsigned int)time(NULL));
-			m_spawnPosAlpha.x = (float)1 + rand() % 9;
-			m_spawnPosAlpha.y = (float)8;
-			m_spawnPosAlpha.z = (float)1 + rand() % 9;
+			if (m_blockAlpha == nullptr)
+			{
+				//乱数のシードをリセットする。
+				//rand((unsigned int)time(NULL));
+				//m_spawnPosAlpha.x = (float)1 + rand() % 9;
+				//m_spawnPosAlpha.y = (float)8;
+				//m_spawnPosAlpha.z = (float)1 + rand() % 9;
 
-			m_blockAlpha = new Obj3D();
-			m_blockAlpha->Initialize(m_deviceResources, m_states);
-			m_blockAlpha->SetModel(m_model[TILE_BLOCK1].get());
-			m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha.x, -1.0f + (float)m_spawnPosAlpha.y, -0.5f + (float)m_spawnPosAlpha.z));
+				m_blockAlpha = new Obj3D();
+				m_blockAlpha->Initialize(m_deviceResources, m_states);
+				m_blockAlpha->SetModel(m_model[TILE_BLOCK1].get());
+				m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha.x, -1.0f + (float)m_spawnPosAlpha.y, -0.5f + (float)m_spawnPosAlpha.z));
 
-			//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
-			//{
-			//	//乱数のシードをリセットする。
-			//	//srand((unsigned int)time(NULL));
-			//	m_spawnPosBeta[i].x = m_spawnPosAlpha.x + (-1.0f + (float)(rand() % 2));
-			//	m_spawnPosBeta[i].y = m_spawnPosAlpha.y + ((float)(rand() % 1));
-			//	m_spawnPosBeta[i].z = m_spawnPosAlpha.z + (-1.0f + (float)(rand() % 2));
+				//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
+				//{
+				//	//乱数のシードをリセットする。
+				//	//srand((unsigned int)time(NULL));
+				//	m_spawnPosBeta[i].x = m_spawnPosAlpha.x + (-1.0f + (float)(rand() % 2));
+				//	m_spawnPosBeta[i].y = m_spawnPosAlpha.y + ((float)(rand() % 1));
+				//	m_spawnPosBeta[i].z = m_spawnPosAlpha.z + (-1.0f + (float)(rand() % 2));
 
-			//	if (m_spawnPosAlpha != m_spawnPosBeta[i])
-			//	{
-			//		m_blockBeta[i] = new Obj3D();
-			//		m_blockBeta[i]->Initialize(m_deviceResources, m_states);
-			//		m_blockBeta[i]->SetModel(m_model[TILE_BLOCK1].get());
-			//		m_blockBeta[i]->SetPosition(Vector3((float)m_spawnPosBeta[i].x, -1.0f + (float)m_spawnPosBeta[i].y, -0.5f + (float)m_spawnPosBeta[i].z));
-			//	}
+				//	if (m_spawnPosAlpha != m_spawnPosBeta[i])
+				//	{
+				//		m_blockBeta[i] = new Obj3D();
+				//		m_blockBeta[i]->Initialize(m_deviceResources, m_states);
+				//		m_blockBeta[i]->SetModel(m_model[TILE_BLOCK1].get());
+				//		m_blockBeta[i]->SetPosition(Vector3((float)m_spawnPosBeta[i].x, -1.0f + (float)m_spawnPosBeta[i].y, -0.5f + (float)m_spawnPosBeta[i].z));
+				//	}
 
-			//}
+				//}
+			}
+
 		}
 
 		//仮ブロックあったら落ちる処理動きます
 		if (m_blockAlpha != nullptr)
 		{
-			static int CD = 10;
-			CD--;
 			m_blockAlpha->Update(elapsedTime);
-			for (int i = 0; i < BLOCK_MAXCOUNT; i++)
-			{
-				if (m_blockBeta[i] != nullptr)
-				{
-					m_blockBeta[i]->Update(elapsedTime);
-				}
-			}
+			//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
+			//{
+			//	if (m_blockBeta[i] != nullptr)
+			//	{
+			//		m_blockBeta[i]->Update(elapsedTime);
+			//	}
+			//}
 
 			if (IsMovable(Vector3((m_spawnPosAlpha.x), (m_spawnPosAlpha.y - Dungeon::BLOCK_SPEED), (m_spawnPosAlpha.z))))
 			{
-				if (CD < 0)
+				if (m_CD < 0)
 				{
 					m_spawnPosAlpha.y -= Dungeon::BLOCK_SPEED;
 					m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha.x, -1.0f + (float)m_spawnPosAlpha.y, -0.5f + (float)m_spawnPosAlpha.z));
-					for (int i = 0; i < BLOCK_MAXCOUNT; i++)
-					{
-						if (m_blockBeta[i] != nullptr)
-						{
-							m_spawnPosBeta[i].y -= Dungeon::BLOCK_SPEED;
-							m_blockBeta[i]->SetPosition(Vector3((float)m_spawnPosBeta[i].x, -1.0f + (float)m_spawnPosBeta[i].y, -0.5f + (float)m_spawnPosBeta[i].z));
-						}
-					}
+					//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
+					//{
+					//	if (m_blockBeta[i] != nullptr)
+					//	{
+					//		m_spawnPosBeta[i].y -= Dungeon::BLOCK_SPEED;
+					//		m_blockBeta[i]->SetPosition(Vector3((float)m_spawnPosBeta[i].x, -1.0f + (float)m_spawnPosBeta[i].y, -0.5f + (float)m_spawnPosBeta[i].z));
+					//	}
+					//}
 
-					CD = 10;
+					m_CD = 10;
 				}
 			}
 			else
@@ -286,6 +331,11 @@ void Dungeon::Update(float elapsedTime)
 					{
 						m_data[i][j][k] = TILE_BLOCK1;
 					}
+					else if (m_data[i][j][k] == TILE_FALLINGBLOCK1)
+					{
+						m_data[i][j][k] = TILE_BLOCK1;
+					}
+
 
 					if (m_blockAlpha != nullptr)
 					{
@@ -312,11 +362,11 @@ void Dungeon::Update(float elapsedTime)
 								m_data[i][j][k] = TILE_BLOCK1;
 							}
 
-							if (m_blockBeta[l] != nullptr)
-							{
-								delete m_blockBeta[l];
-								m_blockBeta[l] = nullptr;
-							}
+							//if (m_blockBeta[l] != nullptr)
+							//{
+							//	delete m_blockBeta[l];
+							//	m_blockBeta[l] = nullptr;
+							//}
 						}
 					}
 
@@ -327,19 +377,17 @@ void Dungeon::Update(float elapsedTime)
 
 		}
 
-		//if (m_block[1][0][1] != nullptr)
-		//{
-		//	m_block[1][0][1].reset();
-		//	m_block[1][0][1] = nullptr;
-		//	m_data[1][0][1] = TILE_NONE;
-
-		//}
 	}
 }
 
 
 void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix & projection)
 {
+
+	//コンテキスト呼び出し
+	ID3D11DeviceContext* context = m_deviceResources->GetD3DDeviceContext();
+
+	//ブロックのレンダー表示
 	for (int i = 0; i < MAZE_WIDTH; i++)
 	{
 		for (int j = 0; j < MAZE_HEIGHT; j++)
@@ -350,12 +398,7 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 				{
 					if (m_data[i][j][k] != 0)
 					{
-						if (k < 9)
-						{
-							m_block[i][j][k]->Render(view, projection);
-
-						}
-
+						m_block[i][j][k]->Render(view, projection);
 					}
 				}
 			}
@@ -367,14 +410,71 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 		m_blockAlpha->Render(view, projection);
 	}
 
-	for (int i = 0; i < BLOCK_MAXCOUNT; i++)
-	{
-		if (m_blockBeta[i] != nullptr)
-		{
-			m_blockBeta[i]->Render(view, projection);
+	//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
+	//{
+	//	if (m_blockBeta[i] != nullptr)
+	//	{
+	//		m_blockBeta[i]->Render(view, projection);
 
-		}
-	}
+	//	}
+	//}
+
+	// 影の描画========================================
+	Matrix world;
+
+	world = Matrix::CreateTranslation(m_shadowPos);
+
+	// 頂点情報（ここは自分で設定してください。）
+	VertexPositionTexture vertex[4] =
+	{
+		VertexPositionTexture(Vector3(1.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f)),
+		VertexPositionTexture(Vector3(-1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f)),
+		VertexPositionTexture(Vector3(-1.0f, -1.0f, 0.0f), Vector2(1.0f, 1.0f)),
+		VertexPositionTexture(Vector3(1.0f,-1.0f, 0.0f), Vector2(0.0f, 1.0f)),
+	};
+
+	// テクスチャサンプラーの設定（クランプテクスチャアドレッシングモード）
+	ID3D11SamplerState* samplers[1] = { m_states->LinearClamp() };
+	context->PSSetSamplers(0, 1, samplers);
+	// 不透明に設定
+	context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+	// 深度バッファに書き込み参照する
+	context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	// カリングは左周り
+	context->RSSetState(m_states->CullCounterClockwise());
+
+	// 不透明のみ描画する設定
+	m_shadowBatchEffect->SetAlphaFunction(D3D11_COMPARISON_EQUAL);
+	m_shadowBatchEffect->SetReferenceAlpha(255);
+
+	m_shadowBatchEffect->SetWorld(world);
+	m_shadowBatchEffect->SetView(view);
+	m_shadowBatchEffect->SetProjection(projection);
+	m_shadowBatchEffect->SetTexture(m_textureShadow.Get());
+	m_shadowBatchEffect->Apply(context);
+	context->IASetInputLayout(m_shadowInputLayout.Get());
+
+	// 不透明部分を描画
+	m_shadowBatch->Begin();
+	m_shadowBatch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
+	m_shadowBatch->End();
+
+	// 不透明以外の半透明部分を描画する設定
+	m_shadowBatchEffect->SetAlphaFunction(D3D11_COMPARISON_NOT_EQUAL);
+	m_shadowBatchEffect->Apply(context);
+
+	// 半透明で描画
+	context->OMSetBlendState(m_states->NonPremultiplied(), nullptr, 0xFFFFFFFF);
+	// 深度バッファに書き込まないが参照だけする
+	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
+
+	// 半透明部分を描画
+	m_shadowBatch->Begin();
+	m_shadowBatch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
+	m_shadowBatch->End();
+	// ==============================================
+
+
 }
 
 
@@ -444,7 +544,7 @@ bool Dungeon::IsClimbing(DirectX::SimpleMath::Vector3 position)
 
 bool Dungeon::FallingDown(DirectX::SimpleMath::Vector3 position)
 {
-	if (m_data[(int)position.x][(int)position.y][(int)position.z] == TILE_NONE)
+	if (m_data[(int)position.x][(int)position.y - 1][(int)position.z] == TILE_NONE)
 	{
 		return true;
 	}

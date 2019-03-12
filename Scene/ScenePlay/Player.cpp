@@ -46,7 +46,7 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_hit(back).png", nullptr, m_playerTexture[5].GetAddressOf());
 	//============================================================================================================================
 	m_player = std::make_unique<Obj2D>();
-	m_position = Vector3(5.0f, 1.0f, 5.0f);
+	m_position = Vector3(1.0f, 1.0f, 1.0f);
 	m_player->SetPosition(m_position);
 	m_player->Initialize(m_deviceResources, states, 4);
 	m_player->SetTexture(m_playerTexture[0].Get());
@@ -212,28 +212,28 @@ void Player::Move()
 	{
 		m_movingDirection = PMove(nextMovingDirection);
 
-
-		//if (countdown < 0)
-		//{
-		//	//m_player->SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
-		//	//wasPosition = position.y;
-		//	//countdown = 10;
-		//}
 	}
 
-	//if (m_dungeon->IsMovable(Vector3((iPosBuffX), (iPosBuffY - 1.0f), (iPosBuffY))))
-	//{
-	//	if (m_dungeon->IsMovable(position))
-	//	{
-	//		//position.y--;
-	//		//m_player->SetPosition(Vector3(position.x, position.y - 0.1f, position.z));
-	//		//countdown = 10;
-
-	//	}
-
-	//}
 
 	AMove();
+
+	//if (!m_dungeon->FallingDown(Vector3(m_position)))
+	//{
+	//	Vector3 position = m_player->GetPosition();
+	//	if (position.y <= m_position.y)
+	//	{
+	//		position.y ++;
+	//	}
+	//	if (position.y > m_position.y)
+	//	{
+	//		position.y -= 0.5f;
+	//	}
+
+	//	{
+	//		m_player->SetPosition(position);
+	//	}
+	//}
+
 	if (m_isFront)
 	{
 		m_charaState = IDLE_FRONT;
@@ -362,7 +362,8 @@ void Player::AMove()
 
 		}
 
-		if (m_dungeon->IsMovable(Vector3((m_position.x), (m_position.y - 1.0f), (m_position.z))))
+
+		if (m_dungeon->FallingDown(Vector3((m_position))))
 		{
 			if (m_dungeon->IsMovable(m_position))
 			{
@@ -375,7 +376,7 @@ void Player::AMove()
 
 
 
-
+		//プレイヤーの位置を渡す
 		m_player->SetPosition(m_position);
 
 
