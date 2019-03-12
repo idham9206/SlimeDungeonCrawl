@@ -9,9 +9,14 @@ enum TileID : unsigned char
 	TILE_BLOCK1,
 	TILE_BLOCK2,
 	TILE_GOAL,
-	TILE_FALLINGBLOCK1,
 
 	TILE_ID,
+
+	//====================
+	TILE_FALLINGBLOCK1 = 11,
+
+	TILE_FALLINGBLOCKCOUNT,
+
 
 	TILE_START = 99,
 };
