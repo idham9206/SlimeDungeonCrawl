@@ -46,7 +46,7 @@ void Player::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonSt
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\chara_hit(back).png", nullptr, m_playerTexture[5].GetAddressOf());
 	//============================================================================================================================
 	m_player = std::make_unique<Obj2D>();
-	m_position = Vector3(1.0f, 1.0f, 1.0f);
+	m_position = m_dungeon->GetPlayerStartPosition();
 	m_player->SetPosition(m_position);
 	m_player->Initialize(m_deviceResources, states, 4);
 	m_player->SetTexture(m_playerTexture[0].Get());

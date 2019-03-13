@@ -57,8 +57,8 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	
 	//プレイヤー初期化
 	m_player = std::make_unique<Player>();
-	m_player->Initialize(m_deviceResources, m_states);
 	m_player->SetDungeon(m_dungeon);
+	m_player->Initialize(m_deviceResources, m_states);
 
 
 	// テクスチャのロード

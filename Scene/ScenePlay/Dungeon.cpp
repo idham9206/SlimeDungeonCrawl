@@ -8,10 +8,10 @@ using namespace DirectX::SimpleMath;
 const float Dungeon::BLOCK_SPEED = 0.2f;
 
 Dungeon::Dungeon():
-	m_blockAlpha(nullptr), /*m_blockBeta{ nullptr } ,*/ m_spawnPosAlpha(Vector3::Zero), m_spawnPosBeta { Vector3::Zero }, 
+	m_blockAlpha(nullptr), /*m_blockBeta{ nullptr } ,*/ m_spawnPosAlpha{ Vector3::Zero }, m_spawnPosBeta{ Vector3::Zero },
 	m_playerPos ( Vector3::Zero ), m_shadowPos (Vector3::Zero),
 	m_block{ nullptr }, m_data { TILE_NONE } , m_loader (nullptr),
-	blockCD ( 40 ), m_CD(10)
+	m_blockCD (40), m_CD(BLOCK_COOLDOWN), m_dataAlpha(0)
 {
 }
 
@@ -82,7 +82,7 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	//データ制作
 	m_loader = new DataLoad();
-	m_loader->LoadData(L"Stage00.csv");
+	m_loader->LoadData(L"Stage01.csv");
 
 
 	//==================================
@@ -139,7 +139,6 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 			}
 		}
 	}
-
 	//呼んだデータを変換する
 	for (int i = 0; i < MAZE_WIDTH; i++)
 	{
@@ -150,14 +149,21 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 
 				switch (m_loader->GetData()[i][j][k])
 				{
-				case 0: m_data[i][j][k] = TILE_NONE;  break;
+				case 0: m_data[i][j][k] = TILE_NONE;	break;
 				case 1: m_data[i][j][k] = TILE_BLOCK1;	break;
 				case 2: m_data[i][j][k] = TILE_BLOCK2;	break;
 				case 3: m_data[i][j][k] = TILE_GOAL;	break;
 				//======================================
-				case 11: m_data[i][j][k] = TILE_FALLINGBLOCK1; break;
+				case 11: 
+					m_data[i][j][k] = TILE_FALLINGBLOCK1; 
+					m_dataAlpha++;
+					break;
 
 				//======================================
+				case 99: 
+					m_playerPos = Vector3(i, j, k);
+					m_data[i][j][k] = TILE_NONE;
+					break;
 				default : m_data[i][j][k] = TILE_NONE;  break;
 				}
 
@@ -165,7 +171,11 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 			}
 		}
 	}
+	//落ちるブロックの仮位置のサイズ更新
+	m_spawnPosAlpha.resize(m_dataAlpha);
 
+	//落ちるブロックの数の仮データ
+	int dataBeta = 0;
 	// ブロックを作成
 	for (int i = 0; i < MAZE_WIDTH; i++)
 	{
@@ -199,8 +209,9 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 					break;
 
 				case TILE_FALLINGBLOCK1:
-					m_spawnPosAlpha = Vector3( i, j + 5, k);
-					m_shadowPos = Vector3(i, j, k);
+					m_spawnPosAlpha[dataBeta] = Vector3( i, j + 5, k);
+					//m_shadowPos = Vector3(i, j, k);
+					dataBeta++;
 					break;
 
 				default:
@@ -220,9 +231,9 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 
 void Dungeon::Update(float elapsedTime, bool startFlag)
 {
-	if (blockCD > 0 && startFlag)
+	if (m_blockCD > 0 && startFlag)
 	{
-		blockCD--;
+		m_blockCD--;
 	}
 	if (m_CD >= 0)
 	{
@@ -244,9 +255,11 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 				}
 			}
 		}
+		//落ちるブロックの仮変数
+		static int dataBeta = 0;
 
 		//仮ブロックまだなかったら作成処理
-		if (blockCD <= 0)
+		if (m_blockCD <= 0)
 		{
 			if (m_blockAlpha == nullptr)
 			{
@@ -259,7 +272,7 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 				m_blockAlpha = new Obj3D();
 				m_blockAlpha->Initialize(m_deviceResources, m_states);
 				m_blockAlpha->SetModel(m_model[TILE_BLOCK1].get());
-				m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha.x, -1.0f + (float)m_spawnPosAlpha.y, -0.5f + (float)m_spawnPosAlpha.z));
+				m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha[dataBeta].x, -1.0f + (float)m_spawnPosAlpha[dataBeta].y, -0.5f + (float)m_spawnPosAlpha[dataBeta].z));
 
 				//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
 				//{
@@ -294,12 +307,12 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 			//	}
 			//}
 
-			if (IsMovable(Vector3((m_spawnPosAlpha.x), (m_spawnPosAlpha.y - Dungeon::BLOCK_SPEED), (m_spawnPosAlpha.z))))
+			if (IsMovable(Vector3((m_spawnPosAlpha[dataBeta].x), (m_spawnPosAlpha[dataBeta].y - Dungeon::BLOCK_SPEED), (m_spawnPosAlpha[dataBeta].z))))
 			{
 				if (m_CD < 0)
 				{
-					m_spawnPosAlpha.y -= Dungeon::BLOCK_SPEED;
-					m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha.x, -1.0f + (float)m_spawnPosAlpha.y, -0.5f + (float)m_spawnPosAlpha.z));
+					m_spawnPosAlpha[dataBeta].y -= Dungeon::BLOCK_SPEED;
+					m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha[dataBeta].x, -1.0f + (float)m_spawnPosAlpha[dataBeta].y, -0.5f + (float)m_spawnPosAlpha[dataBeta].z));
 					//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
 					//{
 					//	if (m_blockBeta[i] != nullptr)
@@ -309,15 +322,15 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 					//	}
 					//}
 
-					m_CD = 10;
+					m_CD = BLOCK_COOLDOWN;
 				}
 			}
 			else
 			{
 				{
-					int i = (int)m_spawnPosAlpha.x;
-					int j = (int)m_spawnPosAlpha.y;
-					int k = (int)m_spawnPosAlpha.z;
+					int i = (int)m_spawnPosAlpha[dataBeta].x;
+					int j = (int)m_spawnPosAlpha[dataBeta].y;
+					int k = (int)m_spawnPosAlpha[dataBeta].z;
 					if (m_block[i][j][k] == nullptr)
 					{
 						m_block[i][j][k] = std::make_unique<Obj3D>();
@@ -341,34 +354,38 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 					{
 						delete m_blockAlpha;
 						m_blockAlpha = nullptr;
-
-					}
-					for (int l = 0; l < BLOCK_MAXCOUNT; l++)
-					{
+						if (dataBeta < m_dataAlpha - 1)
 						{
-							int i = (int)m_spawnPosBeta[l].x;
-							int j = (int)m_spawnPosBeta[l].y;
-							int k = (int)m_spawnPosBeta[l].z;
-							if (m_block[i][j][k] == nullptr)
-							{
-								m_block[i][j][k] = std::make_unique<Obj3D>();
-								m_block[i][j][k]->Initialize(m_deviceResources, m_states);
-								m_block[i][j][k]->SetModel(m_model[TILE_BLOCK1].get());
-								m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
-							}
+							dataBeta++;
 
-							if (m_data[i][j][k] == TILE_NONE)
-							{
-								m_data[i][j][k] = TILE_BLOCK1;
-							}
-
-							//if (m_blockBeta[l] != nullptr)
-							//{
-							//	delete m_blockBeta[l];
-							//	m_blockBeta[l] = nullptr;
-							//}
 						}
 					}
+					//for (int l = 0; l < BLOCK_MAXCOUNT; l++)
+					//{
+					//	{
+					//		int i = (int)m_spawnPosBeta[l].x;
+					//		int j = (int)m_spawnPosBeta[l].y;
+					//		int k = (int)m_spawnPosBeta[l].z;
+					//		if (m_block[i][j][k] == nullptr)
+					//		{
+					//			m_block[i][j][k] = std::make_unique<Obj3D>();
+					//			m_block[i][j][k]->Initialize(m_deviceResources, m_states);
+					//			m_block[i][j][k]->SetModel(m_model[TILE_BLOCK1].get());
+					//			m_block[i][j][k]->SetPosition(Vector3((float)i, -1.0f + (float)j, -0.5f + (float)k));
+					//		}
+
+					//		if (m_data[i][j][k] == TILE_NONE)
+					//		{
+					//			m_data[i][j][k] = TILE_BLOCK1;
+					//		}
+
+					//		//if (m_blockBeta[l] != nullptr)
+					//		//{
+					//		//	delete m_blockBeta[l];
+					//		//	m_blockBeta[l] = nullptr;
+					//		//}
+					//	}
+					//}
 
 				}
 

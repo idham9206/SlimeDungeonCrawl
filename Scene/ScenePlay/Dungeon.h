@@ -13,7 +13,8 @@ enum TileID : unsigned char
 	TILE_ID,
 
 	//====================
-	TILE_FALLINGBLOCK1 = 11,
+	TILE_FALLINGBLOCKSTART = 10,
+	TILE_FALLINGBLOCK1,
 
 	TILE_FALLINGBLOCKCOUNT,
 
@@ -32,10 +33,13 @@ public:
 
 	static const float BLOCK_SPEED;
 	static const int BLOCK_MAXCOUNT = 3;
+	static const int BLOCK_COOLDOWN = 10;
 
 private:
 	//仮のデバイスリソーシズ
 	DX::DeviceResources* m_deviceResources;
+	//落ちるブロックの仮変数
+	int m_dataAlpha = 0;
 
 	//仮のコモンステーツ
 	DirectX::CommonStates* m_states;
@@ -51,7 +55,7 @@ private:
 	DirectX::SimpleMath::Vector3 m_playerPos;
 
 	//ブロックがすぐ出すでなければ、この変数でフラッグ立てる
-	int blockCD;
+	int m_blockCD;
 	int m_CD;
 
 	//影の関連ハンドル　============================
@@ -72,7 +76,7 @@ private:
 	//落ちるブロック用の変数
 		//乱数で使ってる場合
 		Obj3D* m_blockAlpha;
-		DirectX::SimpleMath::Vector3 m_spawnPosAlpha;
+		std::vector<DirectX::SimpleMath::Vector3> m_spawnPosAlpha;
 		Obj3D* m_blockBeta[BLOCK_MAXCOUNT];
 		DirectX::SimpleMath::Vector3 m_spawnPosBeta[BLOCK_MAXCOUNT];
 		//落ちるブロックパターン1
@@ -103,10 +107,10 @@ public:
 
 	bool IsGoal(DirectX::SimpleMath::Vector3 position);
 
-	//セッター
-	void PlayerPosition(DirectX::SimpleMath::Vector3 playerPosition)
+	//プレイヤーのスタート位置を返す
+	DirectX::SimpleMath::Vector3 GetPlayerStartPosition()
 	{
-		m_playerPos = playerPosition;
+		return m_playerPos;
 	}
 
 };
