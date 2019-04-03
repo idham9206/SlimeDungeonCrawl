@@ -91,6 +91,12 @@ private:
 	// 射影行列
 	DirectX::SimpleMath::Matrix m_projection;
 
+	//キーボードの押したらの情報ハンドル
+	DirectX::Keyboard::KeyboardStateTracker m_tracker;
+
+	//次のシーンを用意する
+	SceneBase* m_next;
+
 	// デバッグカメラ
 	//std::unique_ptr<DebugCamera> m_debugCamera;
 

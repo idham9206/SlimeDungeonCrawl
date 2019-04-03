@@ -169,7 +169,6 @@ void Player::Move()
 {
 	//キーボードのハンドル
 	auto kb = Keyboard::Get().GetState();
-	//m_tracker.Update(kb);
 
 	//プレイヤーの位置取得
 	int iPosBuffX = (int)m_position.x;
@@ -217,6 +216,9 @@ void Player::Move()
 
 	AMove();
 
+
+	//まだ研究中です。
+	//ぴょいんぴょいんジャンプな動きを作りたい
 	//if (!m_dungeon->FallingDown(Vector3(m_position)))
 	//{
 	//	Vector3 position = m_player->GetPosition();
@@ -259,10 +261,10 @@ void Player::Move()
 		}
 	}
 
-	if (kb.A)
-	{
-		m_isDead = true;
-	}
+	//if (kb.A)
+	//{
+	//	m_isDead = true;
+	//}
 
 
 }
@@ -282,8 +284,7 @@ void Player::AMove()
 		{
 			if (m_dungeon->IsMovable(Vector3(m_position.x, m_position.y, (m_position.z - 1.0f))))
 			{
-				//position.z--;
-				//m_player->SetPosition(position);
+				//m_position.z -= 0.1f;
 
 			}
 			else if (!m_dungeon->IsMovable(Vector3(m_position.x, m_position.y, (m_position.z - 1.0f))) &&
@@ -300,8 +301,7 @@ void Player::AMove()
 		{
 			if (m_dungeon->IsMovable(Vector3(m_position.x, m_position.y, (m_position.z + 1.0f))))
 			{
-				//position.z++;
-				//m_player->SetPosition(position);
+				//m_position.z += 0.1f;
 
 
 			}
@@ -322,8 +322,7 @@ void Player::AMove()
 		{
 			if (m_dungeon->IsMovable(Vector3((m_position.x + 1.0f), m_position.y, (m_position.z))))
 			{
-				//position.x++;
-				//m_player->SetPosition(position);
+				//m_position.x += 0.1f;
 
 			}
 			else if (!m_dungeon->IsMovable(Vector3((m_position.x + 1.0f), m_position.y, (m_position.z))) &&
@@ -343,8 +342,7 @@ void Player::AMove()
 
 			if (m_dungeon->IsMovable(Vector3((m_position.x - 1.0f), m_position.y, (m_position.z))))
 			{
-				//position.x--;
-				//m_player->SetPosition(position);
+				//m_position.x -= 0.1f;
 
 
 			}
@@ -465,26 +463,6 @@ Direction Player::PMove(Direction nextDirection)
 		}
 	}
 
-	//{
-	//	Vector3 nextMovingDirectionVector = DIRECTION_VECTOR[nextDirection];    // 方向ベクトルの算出
-	//	velocity = nextMovingDirectionVector * speed;
-	//	Vector3 destination = fPosBuff + nextMovingDirectionVector;   // 目的地
-	//	if (!m_dungeon->IsMovable(destination)) // 移動不可能の場合
-	//	{
-	//		if (m_dungeon->IsMovable(Vector3(destination.x, destination.y + 1.0f, destination.z)))
-	//		{
-	//			velocity = (Vector3(0.0f, 1.0f, 0.0f) + (center - m_player->GetPosition()));
-	//		}
-
-	//	}
-
-	//	if (m_dungeon->IsMovable(Vector3(destination.x, destination.y - 1.0f, destination.z)))
-	//	{
-	//		velocity = Vector3(0.0f, -1.0f, 0.0f);
-	//	}
-
-
-	//}
 	// 移動処理 ------------------------------------
 	m_position += velocity; // 速度分の移動
 

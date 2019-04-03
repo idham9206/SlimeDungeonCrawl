@@ -9,7 +9,8 @@ Obj2D::Obj2D():
 	m_scale(Vector2(1.0f, 1.0f)),
 	m_position(Vector2(1.0f, 1.0f)),
 	m_frameTimeResetter(30.0f),
-	m_degreesY(0)
+	m_degreesY(0),
+	m_loop(true)
 {
 }
 

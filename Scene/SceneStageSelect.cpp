@@ -1,6 +1,6 @@
 #include "..\pch.h"
-#include "SceneTitle.h"
 #include "SceneStageSelect.h"
+#include "ScenePlay.h"
 
 #include "..\\Utility\\ADX2\ADX2Le.h"
 
@@ -9,15 +9,15 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 using namespace MyLibrary;
 
-SceneTitle::SceneTitle()
+SceneSelect::SceneSelect()
 {
 }
 
-SceneTitle::~SceneTitle()
+SceneSelect::~SceneSelect()
 {
 }
 
-void SceneTitle::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates * states)
+void SceneSelect::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates * states)
 {
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	//引数から設定する
@@ -37,36 +37,47 @@ void SceneTitle::Initialize(DX::DeviceResources * deviceResources, DirectX::Comm
 
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
-	//
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleLogo.png", nullptr, m_textureTitle.GetAddressOf());
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleStart.png", nullptr, m_textureStart.GetAddressOf());
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleBoard.png", nullptr, m_textureBoard.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\StageSelect.png", nullptr, m_textureSelect.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\StageSelectSazai.png", nullptr, m_textureSazai.GetAddressOf());
 
 	m_blink = new Blink();
-	m_blink->Initialize(70);
+	m_blink->Initialize(30);
 
 }
 
-SceneBase * SceneTitle::Update(float elapsedTime)
+SceneBase * SceneSelect::Update(float elapsedTime)
 {
 	float time = elapsedTime;
 
 	auto kb = Keyboard::Get().GetState();
-	m_blink->Update(time);
 
 	KeyTriggerFunction();
-	if (keyCountSpace == 1)
+
+	m_blink->Update(time);
+
+	//シーン作る
+	ScenePlay * scene = nullptr;
+	if (scene == nullptr)
 	{
-		return new SceneSelect();
+		scene = new ScenePlay();
+		if (keyCountNumber0 == 1)
+		{
+			scene->CreateDungeon(L"Stage00.csv");
+			return scene;
+		}
+		if (keyCountNumber1 == 1)
+		{
+			scene->CreateDungeon(L"Stage01.csv");
+			return scene;
+		}
 
 	}
-	else
-	{
-		return nullptr;
-	}
+
+	return nullptr;
+
 }
 
-void SceneTitle::Render()
+void SceneSelect::Render()
 {
 
 	m_deviceResources->PIXBeginEvent(L"Render");
@@ -74,18 +85,18 @@ void SceneTitle::Render()
 
 	// スプライトの描画
 	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
-	m_sprites->Draw(m_textureBoard.Get(), Vector2(35.0f, -5.0f));
-	m_sprites->Draw(m_textureTitle.Get(), Vector2(35.0f, 30.0f));
 	if (m_blink->GetState())
 	{
-		m_sprites->Draw(m_textureStart.Get(), Vector2(160.0f, 416.0f));
+		m_sprites->Draw(m_textureSelect.Get(), Vector2(30.0f, 216.0f));
 	}
+	m_sprites->Draw(m_textureSazai.Get(), Vector2(160.0f, 400.0f));
+
 	m_sprites->End();
 
 
 }
 
-void SceneTitle::Reset()
+void SceneSelect::Reset()
 {
 	// スプライトバッチの解放
 	m_sprites.reset();
@@ -94,4 +105,5 @@ void SceneTitle::Reset()
 	//点滅フラグを解放
 	delete m_blink;
 	m_blink = nullptr;
+
 }

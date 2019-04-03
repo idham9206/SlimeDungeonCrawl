@@ -25,7 +25,7 @@ Game::Game()
     m_deviceResources = std::make_unique<DX::DeviceResources>();
     m_deviceResources->RegisterDeviceNotify(this);
 
-	m_scene = new ScenePlay();
+	m_scene = new SceneTitle();
 }
 
 // Initialize the Direct3D resources required to run.
@@ -38,10 +38,14 @@ void Game::Initialize(HWND window, int width, int height)
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(window);
 
+	//＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	//デバッグ用の床とカメラ残して置いときました。
+
 	// デバッグカメラの作成
 	//m_debugCamera = std::make_unique<DebugCamera>(width, height);
-
-    m_deviceResources->SetWindow(window, width, height);
+	//＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	
+	m_deviceResources->SetWindow(window, width, height);
 
     m_deviceResources->CreateDeviceResources();
     CreateDeviceDependentResources();
@@ -83,27 +87,32 @@ void Game::Update(DX::StepTimer const& timer)
     // TODO: Add your game logic here.
     elapsedTime;
 
+	//＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	//デバッグ用の床とカメラ残して置いときました。
+
 	// デバッグカメラの更新
 	//m_debugCamera->Update();
 
-	//シーンの更新
-	//m_scene->Update(elapsedTime);
+	//＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+	auto kb = Keyboard::Get().GetState();
+	m_tracker.Update(kb);
 
 	{	
-		//次のシーンを用意する
-		SceneBase* next = nullptr;
-		next = m_scene->Update(elapsedTime);
+		m_next = nullptr;
+		m_next = m_scene->Update(elapsedTime);
 
-		if (next != nullptr)
+		if (m_next != nullptr)
 		{
 			//今シーンの解放
 			m_scene->Reset();
 			delete m_scene;
 			//用意されたシーンをコピーする
-			m_scene = next;
+			m_scene = m_next;
 			//シーンの再初期化
 			m_scene->Initialize(m_deviceResources.get(), m_states.get());
 		}
+
 	}
 
 
@@ -125,6 +134,9 @@ void Game::Render()
 	m_deviceResources->PIXBeginEvent(L"Render");
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
+	//＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	//デバッグ用の床とカメラ残して置いときました。
+
 	// ビュー行列の作成
 	//m_view = m_debugCamera->GetCameraMatrix();
 	//m_view = Matrix::CreateLookAt(Vector3(0,0,0), Vector3(5,3,5),Vector3::Up);
@@ -133,6 +145,8 @@ void Game::Render()
 
 	// グリッドの床の描画
 	//m_gridFloor->Render(context, m_view, m_projection);
+
+	//＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 	// ここから描画処理を記述する
 
@@ -289,13 +303,26 @@ void Game::OnDeviceLost()
 	//m_gridFloor.reset();
 
 	//シーンの最後の解放
-	m_scene->Reset();
-	delete m_scene;
-	m_scene = nullptr;
+	if (m_scene != nullptr)
+	{
+		m_scene->Reset();
+		delete m_scene;
+		m_scene = nullptr;
+	}
+
+	//仮シーンの解放
+	if (m_next != nullptr)
+	{
+		m_next->Reset();
+		delete m_next;
+		m_next = nullptr;
+
+	}
 
 	//音の解放
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Finalize();
+
 
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "..\..\Utility\Dataload.h"
 #include "..\..\Object\Obj3D.h"
+#include "..\..\Object\Obj2D.h"
 
 enum TileID : unsigned char
 {
@@ -58,18 +59,13 @@ private:
 	int m_blockCD;
 	int m_CD;
 
+	//ダンジョンのデータ仮ハンドル
+	const wchar_t * m_dungeonData;
+
 	//影の関連ハンドル　============================
-	bool m_shadowFlag;
-	//影のテクスチャー
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow;
-	//影の位置
-	DirectX::SimpleMath::Vector3 m_shadowPos;
-	// エフェクト
-	std::unique_ptr<DirectX::AlphaTestEffect> m_shadowBatchEffect;
-	// プリミティブバッチ
-	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>> m_shadowBatch;
-	// 入力レイアウト
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_shadowInputLayout;
+	std::unique_ptr<Obj2D> m_shadow; //影のオブジェクト
+	DirectX::SimpleMath::Vector3 m_shadowPos; //影の位置
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureShadow; //影のテクスチャー
 	//=============================================
 
 
@@ -94,7 +90,7 @@ public:
 	void Update(float elapsedTime, bool startFlag);
 
 	// 描画
-	void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix & projection);
+	void Dungeon::Render(DirectX::SimpleMath::Vector3 eye, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
 
 	//セッターゲッター関数まとめ
 	//チェッカー系
@@ -106,6 +102,8 @@ public:
 	bool FallingDown(DirectX::SimpleMath::Vector3 position);
 
 	bool IsGoal(DirectX::SimpleMath::Vector3 position);
+
+	void SetDungeonData(const wchar_t * data);
 
 	//プレイヤーのスタート位置を返す
 	DirectX::SimpleMath::Vector3 GetPlayerStartPosition()

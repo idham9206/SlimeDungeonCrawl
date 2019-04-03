@@ -38,6 +38,9 @@ private:
 	float m_gameTimerCD;
 	Number* m_gameTimer;
 
+	//ダンジョンのデータ仮ハンドル
+	const wchar_t * m_dungeonData;
+
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
 
@@ -72,5 +75,10 @@ private:
 	bool m_gameOverState;
 
 	//EffectManager*							m_effectManager;
+
+public:
+	//ダンジョンの作成
+	void CreateDungeon(const wchar_t * data);
+
 
 };

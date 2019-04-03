@@ -56,5 +56,17 @@ protected:
 	//アイ行列
 	DirectX::SimpleMath::Vector3 m_eye;
 
+
+	//キーボードのトリガー変数
+	int keyCountSpace;
+	int keyCountUp;
+	int keyCountDown;
+	int keyCountLeft;
+	int keyCountRight;
+	int keyCountNumber0;
+	int keyCountNumber1;
+
+	//キートリガーの関数
+	void KeyTriggerFunction();
 };
 

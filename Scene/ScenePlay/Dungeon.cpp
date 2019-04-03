@@ -49,6 +49,8 @@ Dungeon::~Dungeon()
 		}
 	}
 
+	//いっかいで複数ブロック置きたい場合の処理です。
+	//今は未完成なので、とりあえず置いときます。
 	//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
 	//{
 	//	if (m_blockBeta[i] != nullptr)
@@ -66,6 +68,11 @@ Dungeon::~Dungeon()
 
 	}
 
+	if (m_loader != nullptr)
+	{
+		delete m_loader;
+		m_loader = nullptr;
+	}
 }
 
 void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonStates * states)
@@ -82,30 +89,18 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 	//*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	//データ制作
 	m_loader = new DataLoad();
-	m_loader->LoadData(L"Stage01.csv");
+	m_loader->LoadData(m_dungeonData);
 
 
 	//==================================
 	//影の関連
 	//==================================
 	// テクスチャのロード
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\shadowbg1.png", nullptr, m_textureShadow.GetAddressOf());
-	// エフェクトの作成
-	m_shadowBatchEffect = std::make_unique<AlphaTestEffect>(device);
-	m_shadowBatchEffect->SetAlphaFunction(D3D11_COMPARISON_EQUAL);
-	m_shadowBatchEffect->SetReferenceAlpha(255);
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\shadow.png", nullptr, m_textureShadow.GetAddressOf());
 
-	// 入力レイアウト生成
-	void const* shaderByteCode;
-	size_t byteCodeLength;
-	m_shadowBatchEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-	device->CreateInputLayout(VertexPositionTexture::InputElements, VertexPositionTexture::InputElementCount,
-		shaderByteCode, byteCodeLength, m_shadowInputLayout.GetAddressOf());
-
-
-	// プリミティブバッチの作成
-	m_shadowBatch = std::make_unique<PrimitiveBatch<VertexPositionTexture>>(context);
-
+	m_shadow = std::make_unique<Obj2D>();
+	m_shadow->Initialize(m_deviceResources, states, 1);
+	m_shadow->SetTexture(m_textureShadow.Get());
 	//===================================
 
 
@@ -161,7 +156,7 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 
 				//======================================
 				case 99: 
-					m_playerPos = Vector3(i, j, k);
+					m_playerPos = Vector3((float)i, (float)j, (float)k);
 					m_data[i][j][k] = TILE_NONE;
 					break;
 				default : m_data[i][j][k] = TILE_NONE;  break;
@@ -209,8 +204,7 @@ void Dungeon::Initialize(DX::DeviceResources * deviceResources, DirectX::CommonS
 					break;
 
 				case TILE_FALLINGBLOCK1:
-					m_spawnPosAlpha[dataBeta] = Vector3( i, j + 5, k);
-					//m_shadowPos = Vector3(i, j, k);
+					m_spawnPosAlpha[dataBeta] = Vector3((float)i, (float)j + 5, (float)k);
 					dataBeta++;
 					break;
 
@@ -240,6 +234,9 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 		m_CD--;
 	}
 
+	//影の更新
+	m_shadow->Update(elapsedTime);
+
 	for (int i = 0; i < MAZE_WIDTH; i++)
 	{
 		for (int j = 0; j < MAZE_HEIGHT; j++)
@@ -263,17 +260,14 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 		{
 			if (m_blockAlpha == nullptr)
 			{
-				//乱数のシードをリセットする。
-				//rand((unsigned int)time(NULL));
-				//m_spawnPosAlpha.x = (float)1 + rand() % 9;
-				//m_spawnPosAlpha.y = (float)8;
-				//m_spawnPosAlpha.z = (float)1 + rand() % 9;
 
 				m_blockAlpha = new Obj3D();
 				m_blockAlpha->Initialize(m_deviceResources, m_states);
 				m_blockAlpha->SetModel(m_model[TILE_BLOCK1].get());
 				m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha[dataBeta].x, -1.0f + (float)m_spawnPosAlpha[dataBeta].y, -0.5f + (float)m_spawnPosAlpha[dataBeta].z));
-
+				m_shadow->SetPosition(Vector3((float)m_spawnPosAlpha[dataBeta].x, -1.0f + (float)m_spawnPosAlpha[dataBeta].y, -3.5f + (float)m_spawnPosAlpha[dataBeta].z));
+				//いっかいで複数ブロック置きたい場合の処理です。
+				//今は未完成なので、とりあえず置いときます。
 				//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
 				//{
 				//	//乱数のシードをリセットする。
@@ -299,6 +293,9 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 		if (m_blockAlpha != nullptr)
 		{
 			m_blockAlpha->Update(elapsedTime);
+
+			//いっかいで複数ブロック置きたい場合の処理です。
+			//今は未完成なので、とりあえず置いときます。
 			//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
 			//{
 			//	if (m_blockBeta[i] != nullptr)
@@ -313,6 +310,9 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 				{
 					m_spawnPosAlpha[dataBeta].y -= Dungeon::BLOCK_SPEED;
 					m_blockAlpha->SetPosition(Vector3((float)m_spawnPosAlpha[dataBeta].x, -1.0f + (float)m_spawnPosAlpha[dataBeta].y, -0.5f + (float)m_spawnPosAlpha[dataBeta].z));
+					
+					//いっかいで複数ブロック置きたい場合の処理です。
+					//今は未完成なので、とりあえず置いときます。
 					//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
 					//{
 					//	if (m_blockBeta[i] != nullptr)
@@ -360,6 +360,9 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 
 						}
 					}
+
+					//いっかいで複数ブロック置きたい場合の処理です。
+					//今は未完成なので、とりあえず置いときます。
 					//for (int l = 0; l < BLOCK_MAXCOUNT; l++)
 					//{
 					//	{
@@ -398,7 +401,7 @@ void Dungeon::Update(float elapsedTime, bool startFlag)
 }
 
 
-void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix & projection)
+void Dungeon::Render(DirectX::SimpleMath::Vector3 eye, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
 
 	//コンテキスト呼び出し
@@ -422,11 +425,18 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 		}
 	}
 
+
+	//仮のブロックnullじゃなかったら
 	if (m_blockAlpha != nullptr)
 	{
+		//仮のブロックの影を描画する
+		m_shadow->Render(eye, view, projection);
+		//仮のブロックを描画する
 		m_blockAlpha->Render(view, projection);
 	}
 
+	//いっかいで複数ブロック置きたい場合の処理です。
+	//今は未完成なので、とりあえず置いときます。
 	//for (int i = 0; i < BLOCK_MAXCOUNT; i++)
 	//{
 	//	if (m_blockBeta[i] != nullptr)
@@ -436,60 +446,6 @@ void Dungeon::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matr
 	//	}
 	//}
 
-	// 影の描画========================================
-	Matrix world;
-
-	world = Matrix::CreateTranslation(m_shadowPos);
-
-	// 頂点情報（ここは自分で設定してください。）
-	VertexPositionTexture vertex[4] =
-	{
-		VertexPositionTexture(Vector3(1.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f)),
-		VertexPositionTexture(Vector3(-1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f)),
-		VertexPositionTexture(Vector3(-1.0f, -1.0f, 0.0f), Vector2(1.0f, 1.0f)),
-		VertexPositionTexture(Vector3(1.0f,-1.0f, 0.0f), Vector2(0.0f, 1.0f)),
-	};
-
-	// テクスチャサンプラーの設定（クランプテクスチャアドレッシングモード）
-	ID3D11SamplerState* samplers[1] = { m_states->LinearClamp() };
-	context->PSSetSamplers(0, 1, samplers);
-	// 不透明に設定
-	context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
-	// 深度バッファに書き込み参照する
-	context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-	// カリングは左周り
-	context->RSSetState(m_states->CullCounterClockwise());
-
-	// 不透明のみ描画する設定
-	m_shadowBatchEffect->SetAlphaFunction(D3D11_COMPARISON_EQUAL);
-	m_shadowBatchEffect->SetReferenceAlpha(255);
-
-	m_shadowBatchEffect->SetWorld(world);
-	m_shadowBatchEffect->SetView(view);
-	m_shadowBatchEffect->SetProjection(projection);
-	m_shadowBatchEffect->SetTexture(m_textureShadow.Get());
-	m_shadowBatchEffect->Apply(context);
-	context->IASetInputLayout(m_shadowInputLayout.Get());
-
-	// 不透明部分を描画
-	m_shadowBatch->Begin();
-	m_shadowBatch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
-	m_shadowBatch->End();
-
-	// 不透明以外の半透明部分を描画する設定
-	m_shadowBatchEffect->SetAlphaFunction(D3D11_COMPARISON_NOT_EQUAL);
-	m_shadowBatchEffect->Apply(context);
-
-	// 半透明で描画
-	context->OMSetBlendState(m_states->NonPremultiplied(), nullptr, 0xFFFFFFFF);
-	// 深度バッファに書き込まないが参照だけする
-	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
-
-	// 半透明部分を描画
-	m_shadowBatch->Begin();
-	m_shadowBatch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
-	m_shadowBatch->End();
-	// ==============================================
 
 
 }
@@ -511,19 +467,6 @@ bool Dungeon::IDChecker(TileID tileID, DirectX::SimpleMath::Vector3 position)
 }
 ////=====================================================================================================////
 
-//bool Dungeon::IsMovable(DirectX::SimpleMath::Vector3 position)
-//{
-//	if (m_data[(int)position.x][(int)position.y][(int)position.z] != TILE_BLOCK1 &&
-//		m_data[(int)position.x][(int)position.y][(int)position.z] != TILE_BLOCK2)
-//	{
-//		return true;
-//	}
-//	else
-//	{
-//		return false;
-//	}
-//
-//}
 bool Dungeon::IsMovable(DirectX::SimpleMath::Vector3 position)
 {
 	if (m_data[(int)position.x][(int)position.y][(int)position.z] != TILE_BLOCK1 &&
@@ -585,4 +528,9 @@ bool Dungeon::IsGoal(DirectX::SimpleMath::Vector3 position)
 		}
 
 	}
+}
+
+void Dungeon::SetDungeonData(const wchar_t * data)
+{
+	m_dungeonData = data;
 }
