@@ -45,6 +45,10 @@ public:
 
     // Properties
     void GetDefaultSize( int& width, int& height ) const;
+	
+	void ChangeFullscreen(BOOL flag);
+
+	void ExitGame();
 
 private:
 

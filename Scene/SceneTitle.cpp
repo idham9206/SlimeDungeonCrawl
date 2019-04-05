@@ -42,6 +42,7 @@ void SceneTitle::Initialize(DX::DeviceResources * deviceResources, DirectX::Comm
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleStart.png", nullptr, m_textureStart.GetAddressOf());
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleBoard.png", nullptr, m_textureBoard.GetAddressOf());
 
+	//点滅フラグを初期化
 	m_blink = new Blink();
 	m_blink->Initialize(70);
 
@@ -52,9 +53,13 @@ SceneBase * SceneTitle::Update(float elapsedTime)
 	float time = elapsedTime;
 
 	auto kb = Keyboard::Get().GetState();
+
+	//点滅フラグの更新
 	m_blink->Update(time);
 
 	KeyTriggerFunction();
+
+	//スペースが押されたら
 	if (keyCountSpace == 1)
 	{
 		return new SceneSelect();

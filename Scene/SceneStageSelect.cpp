@@ -1,6 +1,5 @@
 #include "..\pch.h"
 #include "SceneStageSelect.h"
-#include "ScenePlay.h"
 
 #include "..\\Utility\\ADX2\ADX2Le.h"
 
@@ -9,7 +8,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 using namespace MyLibrary;
 
-SceneSelect::SceneSelect()
+SceneSelect::SceneSelect() : m_scene(nullptr)
 {
 }
 
@@ -28,7 +27,7 @@ void SceneSelect::Initialize(DX::DeviceResources * deviceResources, DirectX::Com
 	// モデルを読み込む
 	EffectFactory fx(device);
 
-	device;
+	//device;
 
 	// コモンステートの作成
 	m_states = states;
@@ -37,11 +36,15 @@ void SceneSelect::Initialize(DX::DeviceResources * deviceResources, DirectX::Com
 
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\StageSelect.png", nullptr, m_textureSelect.GetAddressOf());
-	CreateWICTextureFromFile(device, L"Resources\\Textures\\StageSelectSazai.png", nullptr, m_textureSazai.GetAddressOf());
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\StageSelect.png", nullptr, m_textureSelect.GetAddressOf()); //ステージセレクトのスプライト
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\StageSelectSazai.png", nullptr, m_textureSazai.GetAddressOf()); //謝罪のスプライト
 
+	//点滅フラグを初期化
 	m_blink = new Blink();
 	m_blink->Initialize(30);
+
+	//シーン作る
+	m_scene = new ScenePlay();
 
 }
 
@@ -53,35 +56,29 @@ SceneBase * SceneSelect::Update(float elapsedTime)
 
 	KeyTriggerFunction();
 
+	//点滅フラグの更新
 	m_blink->Update(time);
 
-	//シーン作る
-	ScenePlay * scene = nullptr;
-	if (scene == nullptr)
+	//0が押されたら
+	if (keyCountNumber0 == 1)
 	{
-		scene = new ScenePlay();
-		if (keyCountNumber0 == 1)
-		{
-			scene->CreateDungeon(L"Stage00.csv");
-			return scene;
-		}
-		if (keyCountNumber1 == 1)
-		{
-			scene->CreateDungeon(L"Stage01.csv");
-			return scene;
-		}
-
+		m_scene->CreateDungeon(L"Stage00.csv");
+		return m_scene;
+	}
+	//1が押されたら
+	if (keyCountNumber1 == 1)
+	{
+		m_scene->CreateDungeon(L"Stage01.csv");
+		return m_scene;
 	}
 
 	return nullptr;
-
 }
 
 void SceneSelect::Render()
 {
-
+	
 	m_deviceResources->PIXBeginEvent(L"Render");
-	auto context = m_deviceResources->GetD3DDeviceContext();
 
 	// スプライトの描画
 	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
@@ -92,7 +89,7 @@ void SceneSelect::Render()
 	m_sprites->Draw(m_textureSazai.Get(), Vector2(160.0f, 400.0f));
 
 	m_sprites->End();
-
+	
 
 }
 
@@ -102,8 +99,13 @@ void SceneSelect::Reset()
 	m_sprites.reset();
 	m_sprites = nullptr;
 
+
 	//点滅フラグを解放
-	delete m_blink;
-	m_blink = nullptr;
+	if (m_blink != nullptr)
+	{
+		delete m_blink;
+		m_blink = nullptr;
+
+	}
 
 }

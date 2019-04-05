@@ -229,6 +229,16 @@ void Game::GetDefaultSize(int& width, int& height) const
     width = 800;
     height = 600;
 }
+void Game::ChangeFullscreen(BOOL flag)
+{
+	m_deviceResources->GetSwapChain()->SetFullscreenState(flag, NULL);
+
+}
+void Game::ExitGame()
+{
+	PostQuitMessage(0);
+
+}
 #pragma endregion
 
 #pragma region Direct3D Resources

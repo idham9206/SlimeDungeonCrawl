@@ -45,7 +45,7 @@ void ScenePlay::Initialize(DX::DeviceResources* deviceResources, CommonStates* s
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
 
-	//ゲームタイマーの制作
+	//		//スタートする前のカウントダウンの表示の更新
 	m_gameTimer = new Number(Vector2(320.0f, 180.0f), Vector2(10.0f, 10.0f));
 	m_gameTimer->Initialize();
 	m_gameTimer->Create(m_deviceResources, L"Resources\\Textures\\Number.png");
@@ -86,6 +86,7 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 	m_startCD -= timer;
 	if (!m_startState)
 	{
+		//スタートする前のカウントダウンの表示の更新
 		m_gameTimer->SetNumber((int)m_startCD);
 		m_gameTimer->Update();
 
@@ -156,6 +157,7 @@ SceneBase * ScenePlay::Update(float elapsedTime)
 				m_positionOver.y += 3.5f;
 			}
 
+			//スペースが押されたら
 			if (keyCountSpace == 1)
 			{
 				return new SceneTitle();

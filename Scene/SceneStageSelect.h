@@ -5,6 +5,7 @@
 ////====================================================////
 #pragma once
 #include "SceneBase.h"
+#include "ScenePlay.h"
 
 #include "..\Utility\Number.h"
 #include "..\Utility\Blink.h"
@@ -40,4 +41,8 @@ private:
 
 	//点滅フラグ
 	Blink* m_blink;
+
+	//シーンプレイへ移動する前の処理する前のための変数
+	ScenePlay * m_scene;
+
 };
