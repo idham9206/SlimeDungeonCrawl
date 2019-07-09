@@ -19,6 +19,9 @@ public:
 	virtual void Render() = 0;
 	virtual void Reset() = 0;
 
+	//キートリガーの関数
+	void KeyTriggerFunction();
+
 	//===============================================================
 	//セッターゲッターまとめ
 	//ビュー
@@ -66,7 +69,5 @@ protected:
 	int keyCountNumber0;
 	int keyCountNumber1;
 
-	//キートリガーの関数
-	void KeyTriggerFunction();
 };
 

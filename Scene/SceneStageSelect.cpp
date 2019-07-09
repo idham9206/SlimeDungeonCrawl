@@ -54,8 +54,6 @@ SceneBase * SceneSelect::Update(float elapsedTime)
 
 	auto kb = Keyboard::Get().GetState();
 
-	KeyTriggerFunction();
-
 	//点滅フラグの更新
 	m_blink->Update(time);
 

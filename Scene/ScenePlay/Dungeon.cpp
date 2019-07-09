@@ -9,7 +9,7 @@ const float Dungeon::BLOCK_SPEED = 0.2f;
 
 Dungeon::Dungeon():
 	m_blockAlpha(nullptr), /*m_blockBeta{ nullptr } ,*/ m_spawnPosAlpha{ Vector3::Zero }, m_spawnPosBeta{ Vector3::Zero },
-	m_playerPos ( Vector3::Zero ), m_shadowPos (Vector3::Zero),
+	m_playerPos ( Vector3::Zero ), m_shadow(nullptr),m_shadowPos (Vector3::Zero),
 	m_block{ nullptr }, m_data { TILE_NONE } , m_loader (nullptr),
 	m_blockCD (40), m_CD(BLOCK_COOLDOWN), m_dataAlpha(0)
 {

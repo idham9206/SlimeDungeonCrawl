@@ -101,6 +101,8 @@ void Game::Update(DX::StepTimer const& timer)
 	{	
 		m_next = nullptr;
 		m_next = m_scene->Update(elapsedTime);
+		m_scene->KeyTriggerFunction();
+
 
 		if (m_next != nullptr)
 		{

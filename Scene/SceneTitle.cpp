@@ -37,6 +37,7 @@ void SceneTitle::Initialize(DX::DeviceResources * deviceResources, DirectX::Comm
 
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
+
 	//
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleLogo.png", nullptr, m_textureTitle.GetAddressOf());
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\TitleStart.png", nullptr, m_textureStart.GetAddressOf());
@@ -57,7 +58,6 @@ SceneBase * SceneTitle::Update(float elapsedTime)
 	//点滅フラグの更新
 	m_blink->Update(time);
 
-	KeyTriggerFunction();
 
 	//スペースが押されたら
 	if (keyCountSpace == 1)
